@@ -11,7 +11,7 @@ export default function Header({ onOpenSettings }: HeaderProps) {
 
   return (
     <div className="titlebar-drag-region h-12 flex items-center justify-between px-4 bg-[var(--color-bg-primary)] border-b border-[var(--color-border-primary)]">
-      <span className="titlebar-no-drag text-sm font-medium text-[var(--color-text-secondary)] truncate pl-16">
+      <span className="titlebar-no-drag text-sm font-bold text-[var(--color-text-primary)] truncate pl-16">
         {title}
       </span>
       <button
