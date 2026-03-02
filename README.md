@@ -67,7 +67,7 @@ You ask a question, and your council of AI models responds one by one — each s
 
 ## Screenshots
 <p align="center">
-  <img src="hero.jpg" alt="Synod app showing a council discussion with multiple AI models and a master verdict" width="700" />
+  <img src="hero.png" alt="Synod app showing a council discussion with multiple AI models and a master verdict" width="700" />
 </p>
 <p align="center"><em>Many models, one verdict — watch your council think through the problem, then @mention anyone to keep talking</em></p>
 
