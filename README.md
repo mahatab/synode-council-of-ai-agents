@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="synod.jpg" alt="Synod" width="180" />
+  <img src="images/synod.jpg" alt="Synod" width="180" />
 </p>
 
 <h1 align="center">Synod</h1>
@@ -21,7 +21,7 @@
 Synod is a macOS desktop app that assembles a **council of AI models** to collaboratively tackle your questions. Multiple models from different providers discuss the topic sequentially — each building on what came before — then a **master model** synthesizes everything into a clear, actionable verdict.
 
 ## How It Works
-<img src="pixel-art-flowchart.jpg" alt="Pixel art flowchart showing how Synod works: a user asks a question at the top, five AI council models discuss it sequentially in the middle, a crowned master model delivers the final verdict below, and a looping arrow with an @ symbol shows that users can follow up with any model afterward."/>
+<img src="images/pixel-art-flowchart.jpg" alt="Pixel art flowchart showing how Synod works: a user asks a question at the top, five AI council models discuss it sequentially in the middle, a crowned master model delivers the final verdict below, and a looping arrow with an @ symbol shows that users can follow up with any model afterward."/>
 
 You ask a question, and your council of AI models responds one by one — each seeing the full discussion so far. Once everyone has weighed in, a master model synthesizes all perspectives into a clear, actionable verdict. After the verdict, @mention any model to ask follow-up questions with full context.
 
@@ -68,17 +68,17 @@ You ask a question, and your council of AI models responds one by one — each s
 ## Screenshots
 
 <p align="center">
-  <img src="hero.png" alt="Synod app showing a council discussion with multiple AI models and a master verdict" width="700" />
+  <img src="images/screenshots/hero.png" alt="Synod app showing a council discussion with multiple AI models and a master verdict" width="700" />
 </p>
 <p align="center"><em>Many models, one verdict — watch your council think through the problem, then @mention anyone to keep talking</em></p>
 
 <p align="center">
-  <img src="settings.png" alt="Synod settings panel showing model configuration" width="700" />
+  <img src="images/screenshots/settings.png" alt="Synod settings panel showing model configuration" width="700" />
 </p>
 <p align="center"><em>Configure your council — choose from 8 providers, 30+ models, with API keys secured in macOS Keychain</em></p>
 
 <p align="center">
-  <img src="advanced-settings.png" alt="Synod advanced settings showing prompt engineering modes" width="700" />
+  <img src="images/screenshots/advanced-settings.png" alt="Synod advanced settings showing prompt engineering modes" width="700" />
 </p>
 <p align="center"><em>Control your council with prompt engineering modes</em></p>
 
