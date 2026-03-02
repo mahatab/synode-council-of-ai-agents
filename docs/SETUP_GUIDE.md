@@ -54,27 +54,77 @@ This starts the Vite dev server and the Tauri app with hot-reload.
 2. Select the **Dev** scheme
 3. Press Cmd+B to build (runs `cargo tauri dev`)
 
+## First Launch — Setup Wizard
+
+On first launch, the app presents a setup wizard that walks you through:
+
+1. **Welcome** — Overview of the app
+2. **Model Selection** — Choose which AI models to include in your council
+3. **API Keys** — Enter API keys for each selected provider (stored in macOS Keychain)
+4. **Master Model** — Select which model delivers the final verdict
+5. **Complete** — Ready to start your first council discussion
+
+You can change all of these settings later from the Settings panel.
+
 ## Getting API Keys
+
+You need at least one API key to use the app. The more providers you configure, the more diverse your council discussions will be.
 
 ### Anthropic (Claude)
 1. Go to [console.anthropic.com](https://console.anthropic.com)
-2. Navigate to Settings > API Keys
-3. Create a new key
+2. Sign in or create an account
+3. Navigate to Settings > API Keys
+4. Click "Create Key" and give it a name
+5. Copy the key (it starts with "sk-ant-")
 
 ### OpenAI (GPT)
 1. Go to [platform.openai.com](https://platform.openai.com)
-2. Navigate to API Keys
-3. Create a new secret key
+2. Sign in or create an account
+3. Navigate to API Keys in the sidebar
+4. Click "Create new secret key"
+5. Copy the key (it starts with "sk-")
 
 ### Google (Gemini)
 1. Go to [aistudio.google.com](https://aistudio.google.com)
-2. Click "Get API Key"
-3. Create a key for a Google Cloud project
+2. Sign in with your Google account
+3. Click "Get API Key" in the top bar
+4. Click "Create API Key"
+5. Select or create a Google Cloud project
+6. Copy the generated API key
 
 ### xAI (Grok)
 1. Go to [console.x.ai](https://console.x.ai)
-2. Navigate to API Keys
-3. Create a new key
+2. Sign in with your X (Twitter) account
+3. Navigate to API Keys section
+4. Click "Create API Key"
+5. Copy the generated key
+
+### DeepSeek
+1. Go to [platform.deepseek.com](https://platform.deepseek.com)
+2. Sign in or create an account
+3. Navigate to API Keys section
+4. Click "Create new API key"
+5. Copy the generated key (it starts with "sk-")
+
+### Mistral
+1. Go to [console.mistral.ai](https://console.mistral.ai)
+2. Sign in or create an account
+3. Navigate to API Keys section
+4. Click "Create new key"
+5. Copy the generated API key
+
+### Together AI (Llama)
+1. Go to [api.together.xyz](https://api.together.xyz)
+2. Sign in or create an account
+3. Navigate to Settings > API Keys
+4. Copy your API key
+
+### Cohere (Command)
+1. Go to [dashboard.cohere.com](https://dashboard.cohere.com)
+2. Sign in or create an account
+3. Navigate to API Keys section
+4. Click "Create Trial Key" or "Create Production Key"
+5. Copy the generated API key
 
 ## Building for Production
 

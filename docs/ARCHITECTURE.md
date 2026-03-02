@@ -2,37 +2,37 @@
 
 ## Overview
 
-Council of AI Agents is a Tauri v2 application with a Rust backend and React frontend.
+Council of AI Agents (Synod) is a Tauri v2 desktop application with a Rust backend and React frontend. It orchestrates discussions across 8 AI providers, where council models discuss a user's question sequentially before a master model delivers a final verdict.
 
 ```
-┌─────────────────────────────────────────┐
-│            React Frontend               │
-│  ┌──────────┐  ┌──────────┐  ┌───────┐ │
-│  │ ChatView │  │ Settings │  │Sidebar│ │
-│  └─────┬────┘  └─────┬────┘  └───┬───┘ │
-│        │             │            │     │
-│  ┌─────┴─────────────┴────────────┴──┐  │
-│  │         Zustand Stores            │  │
-│  │  councilStore │ settingsStore     │  │
-│  │  sessionStore                     │  │
-│  └──────────────┬────────────────────┘  │
-│                 │ invoke() / listen()   │
-├─────────────────┼───────────────────────┤
-│                 │ Tauri IPC Bridge      │
-├─────────────────┼───────────────────────┤
-│            Rust Backend                 │
-│  ┌──────────────┴────────────────────┐  │
-│  │           Commands                │  │
-│  │  api_calls │ keychain │ sessions  │  │
-│  └──────────────┬────────────────────┘  │
-│  ┌──────────────┴────────────────────┐  │
-│  │           Providers               │  │
-│  │  anthropic │ openai │ google │xai │  │
-│  └───────────────────────────────────┘  │
-│  ┌───────────────────────────────────┐  │
-│  │      macOS Keychain │ File I/O    │  │
-│  └───────────────────────────────────┘  │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                    React Frontend                        │
+│  ┌───────────┐  ┌───────────┐  ┌────────┐  ┌─────────┐ │
+│  │ ChatView  │  │ Settings  │  │Sidebar │  │ Setup   │ │
+│  └─────┬─────┘  └─────┬─────┘  └───┬────┘  │ Wizard  │ │
+│        │              │             │       └────┬────┘ │
+│  ┌─────┴──────────────┴─────────────┴────────────┴───┐  │
+│  │              Zustand Stores                       │  │
+│  │  councilStore │ settingsStore │ sessionStore      │  │
+│  └──────────────────────┬────────────────────────────┘  │
+│                         │ invoke() / listen()           │
+├─────────────────────────┼────────────────────────────────┤
+│                         │ Tauri IPC Bridge              │
+├─────────────────────────┼────────────────────────────────┤
+│                    Rust Backend                          │
+│  ┌──────────────────────┴────────────────────────────┐  │
+│  │                   Commands                        │  │
+│  │  api_calls │ keychain │ sessions │ settings       │  │
+│  └──────────────────────┬────────────────────────────┘  │
+│  ┌──────────────────────┴────────────────────────────┐  │
+│  │                   Providers                       │  │
+│  │  anthropic │ openai │ google  │ xai               │  │
+│  │  deepseek  │ mistral│ together│ cohere            │  │
+│  └───────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │       macOS Keychain (unified) │ File I/O         │  │
+│  └───────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ## Council Discussion State Machine
@@ -51,18 +51,76 @@ IDLE ──► USER_INPUT ──► GENERATING_SYSTEM_PROMPTS ──► MODEL_TU
                                                    MASTER_VERDICT
                                                          │
                                                       COMPLETE
+                                                         │
+                                                    FOLLOW_UP ──► COMPLETE
+                                                         │
+                                                       ERROR
 ```
+
+**States**: `idle`, `user_input`, `generating_system_prompts`, `model_turn`, `clarifying_qa`, `master_verdict`, `complete`, `follow_up`, `error`
+
+### Discussion Flow
+
+1. **User Input** — User asks a question
+2. **System Prompt Generation** — Master model generates tailored system prompts for each council member (upfront mode) or per-turn (dynamic mode)
+3. **Model Turns** — Each council model responds sequentially, seeing all previous responses. The first model may ask up to 2 clarifying questions
+4. **Master Verdict** — Master model synthesizes all responses into a final verdict (thorough or concise based on discussion depth setting)
+5. **Follow-Up** — User can `@mention` any council member or the master model for follow-up questions with full discussion context
 
 ## Streaming Architecture
 
-1. Frontend calls `invoke("stream_chat", { provider, model, messages, ... })`
-2. Rust backend creates an HTTP request with streaming to the provider API
-3. As SSE chunks arrive, Rust parses them and emits Tauri events
-4. Frontend listens for `stream-token-{streamId}` events and appends tokens
-5. When streaming completes, the invoke returns the full response
+1. Frontend calls `invoke("stream_chat", { provider, model, messages, systemPrompt, apiKey, streamId })`
+2. Rust backend routes to the appropriate provider and creates an HTTP request with SSE streaming
+3. The shared `parse_sse_stream()` utility handles SSE line buffering across TCP chunk boundaries
+4. Each provider supplies a closure to extract tokens/usage from its JSON format
+5. As `StreamEvent::Token` events arrive, Rust emits Tauri events on the `stream-token-{streamId}` channel
+6. Frontend listens for these events and appends tokens in real-time
+7. `StreamEvent::Usage` events are accumulated using a MAX strategy (handles Anthropic's split events, Google's cumulative totals, and single-event providers uniformly)
+8. When streaming completes, the invoke returns a `StreamChatResult` with the full response and final usage data
+
+## IPC Commands
+
+| Module     | Commands                                                        |
+|------------|-----------------------------------------------------------------|
+| `keychain` | `save_api_key`, `get_api_key`, `delete_api_key`, `has_api_key`  |
+| `api_calls`| `stream_chat`                                                   |
+| `sessions` | `save_session`, `load_session`, `list_sessions`, `delete_session`, `get_default_sessions_path` |
+| `settings` | `load_settings`, `save_settings`                                |
 
 ## Data Storage
 
-- **API Keys**: macOS Keychain via `security-framework` crate
-- **Settings**: JSON file at `~/Library/Preferences/council-of-ai-agents/settings.json`
-- **Sessions**: JSON files at `~/Library/Application Support/council-of-ai-agents/sessions/` (configurable)
+- **API Keys**: macOS Keychain — single unified JSON blob at `com.council-of-ai-agents.keys` with in-memory `ApiKeyCache`. Auto-migrates legacy per-provider keychain entries.
+- **Settings**: JSON file at `~/Library/Application Support/council-of-ai-agents/settings.json` (via `dirs::config_dir()`)
+- **Sessions**: JSON files at `~/Library/Application Support/council-of-ai-agents/sessions/` (via `dirs::data_dir()`, configurable via `sessionSavePath` setting)
+
+## Frontend Architecture
+
+### Stores (Zustand)
+
+- **councilStore** — Orchestrates the entire discussion state machine: model turns, streaming, clarifying Q&A, master verdict, and follow-up questions
+- **settingsStore** — Loads/saves `AppSettings` (council models, master model, theme, system prompt mode, discussion depth, cursor style, session path)
+- **sessionStore** — Session CRUD: create, load, list, save, delete. Groups sessions by date in the sidebar
+
+### Key Components
+
+- **SetupWizard** — First-run flow: welcome → model selection → API keys → master model → complete
+- **ChatView** — Main discussion interface with streaming text, `@mention` dropdown for follow-ups
+- **ModelResponse** / **MasterVerdict** — Display model outputs with provider colors, copy buttons
+- **ClarifyingQuestion** — UI for answering the first model's clarifying questions
+- **SettingsModal** — Tabbed settings: Models (drag-drop reorder), API Keys, Appearance, Advanced, Sessions
+- **Sidebar** — Session history grouped by date (Today, Yesterday, Previous 7 Days, etc.)
+
+### Settings
+
+```typescript
+interface AppSettings {
+  councilModels: ModelConfig[];         // Ordered list of council models
+  masterModel: MasterModelConfig;       // Model that generates prompts and verdicts
+  systemPromptMode: 'upfront' | 'dynamic';
+  discussionDepth: 'thorough' | 'concise';
+  theme: 'light' | 'dark' | 'system';
+  cursorStyle: 'ripple' | 'breathing' | 'orbit' | 'multi';
+  sessionSavePath: string | null;       // Custom session storage path
+  setupCompleted: boolean;
+}
+```
