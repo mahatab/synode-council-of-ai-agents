@@ -220,7 +220,7 @@ export default function SetupWizard() {
                   securely in macOS Keychain.
                 </p>
 
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4 mb-6 max-h-[350px] overflow-y-auto">
                   {[...new Set([...selectedProviders, masterModel.provider])].map(
                     (providerId) => {
                       const provider = PROVIDERS.find((p) => p.id === providerId)!;
@@ -268,7 +268,7 @@ export default function SetupWizard() {
                   final verdict.
                 </p>
 
-                <div className="space-y-2 mb-6">
+                <div className="space-y-2 mb-6 max-h-[350px] overflow-y-auto">
                   {PROVIDERS.flatMap((provider) =>
                     provider.models.map((model) => {
                       const isSelected =
