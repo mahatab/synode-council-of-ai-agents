@@ -4,6 +4,7 @@ import type {
   CouncilState,
   DiscussionEntry,
   DiscussionDepth,
+  DiscussionStyle,
   ModelConfig,
   MasterModelConfig,
   ChatMessage,
@@ -31,6 +32,7 @@ interface CouncilStoreState {
     masterModel: MasterModelConfig,
     systemPromptMode: 'upfront' | 'dynamic',
     discussionDepth: DiscussionDepth,
+    discussionStyle: DiscussionStyle,
     getApiKey: (service: string) => Promise<string | null>,
     onEntryComplete: (entry: DiscussionEntry) => void,
   ) => Promise<void>;
@@ -66,6 +68,7 @@ export const useCouncilStore = create<CouncilStoreState>((set, get) => ({
     masterModel,
     systemPromptMode,
     discussionDepth,
+    discussionStyle,
     getApiKey,
     onEntryComplete,
   ) => {
@@ -93,6 +96,10 @@ export const useCouncilStore = create<CouncilStoreState>((set, get) => ({
           return;
         }
 
+        const styleInstruction = discussionStyle === 'independent'
+          ? '\nIMPORTANT: Each model is responding INDEPENDENTLY and will NOT see any other model\'s response. Do NOT instruct them to reference, build on, or respond to other models. Each should provide their own standalone analysis as if they are the only one answering.\n'
+          : '\nEach model should be encouraged to provide unique perspectives and not just repeat previous opinions.\n';
+
         const promptGenMessages: ChatMessage[] = [
           {
             role: 'user',
@@ -100,12 +107,11 @@ export const useCouncilStore = create<CouncilStoreState>((set, get) => ({
 
 "${userQuestion}"
 
-The following AI models will discuss this question in order:
+The following AI models will ${discussionStyle === 'independent' ? 'independently analyze' : 'discuss'} this question${discussionStyle === 'sequential' ? ' in order' : ''}:
 ${models.map((m, i) => `${i + 1}. ${m.displayName} (${m.provider})`).join('\n')}
 
 Generate a specific, tailored system prompt for EACH council model that helps them provide their best analysis. The first model (${models[0]?.displayName}) should be instructed that it MAY ask up to 2 clarifying questions if needed. All other models should be told they CANNOT ask questions.
-
-Each model should be encouraged to provide unique perspectives and not just repeat previous opinions.
+${styleInstruction}
 ${discussionDepth === 'concise' ? '\nIMPORTANT: Instruct each model to keep responses brief and focused — 2-3 key points maximum. No lengthy explanations.\n' : ''}
 Return your response in this exact JSON format:
 ${JSON.stringify(
@@ -192,12 +198,13 @@ ${JSON.stringify(
           userQuestion,
           discussionSoFar,
           i === 0,
+          discussionStyle,
         );
 
         // Get system prompt
         const systemPromptKey = `${model.provider}:${model.model}`;
         let systemPrompt =
-          get().systemPrompts.get(systemPromptKey) || getDefaultSystemPrompt(model, i === 0, discussionDepth);
+          get().systemPrompts.get(systemPromptKey) || getDefaultSystemPrompt(model, i === 0, discussionDepth, discussionStyle);
 
         // Dynamic mode: generate prompt for this model
         if (systemPromptMode === 'dynamic' && i > 0) {
@@ -217,7 +224,9 @@ ${JSON.stringify(
                 [
                   {
                     role: 'user',
-                    content: `Generate a system prompt for ${model.displayName} to analyze: "${userQuestion}". Previous discussion: ${JSON.stringify(discussionSoFar)}. The model should provide a unique perspective. Return only the system prompt text, no JSON.`,
+                    content: discussionStyle === 'independent'
+                      ? `Generate a system prompt for ${model.displayName} to independently analyze: "${userQuestion}". The model is responding independently and will NOT see other models' responses. It should provide its own standalone analysis. Return only the system prompt text, no JSON.`
+                      : `Generate a system prompt for ${model.displayName} to analyze: "${userQuestion}". Previous discussion: ${JSON.stringify(discussionSoFar)}. The model should provide a unique perspective. Return only the system prompt text, no JSON.`,
                   },
                 ],
                 'Generate a concise system prompt. Return only the prompt text.',
@@ -559,12 +568,13 @@ function buildContextMessages(
   userQuestion: string,
   discussionSoFar: DiscussionEntry[],
   isFirstModel: boolean,
+  discussionStyle: DiscussionStyle = 'sequential',
 ): ChatMessage[] {
   const messages: ChatMessage[] = [
     { role: 'user', content: userQuestion },
   ];
 
-  if (!isFirstModel) {
+  if (!isFirstModel && discussionStyle === 'sequential') {
     const previousOpinions = discussionSoFar
       .filter((e): e is Extract<DiscussionEntry, { role: 'model' }> => e.role === 'model')
       .map(
@@ -584,7 +594,7 @@ function buildContextMessages(
   return messages;
 }
 
-function getDefaultSystemPrompt(model: ModelConfig, isFirst: boolean, depth: DiscussionDepth = 'thorough'): string {
+function getDefaultSystemPrompt(model: ModelConfig, isFirst: boolean, depth: DiscussionDepth = 'thorough', style: DiscussionStyle = 'sequential'): string {
   const depthInstruction = depth === 'concise'
     ? 'Be concise and direct. Provide 2-3 key points maximum. Skip lengthy explanations and focus on actionable insights.'
     : 'Be thorough, factual, and specific.';
@@ -592,6 +602,11 @@ function getDefaultSystemPrompt(model: ModelConfig, isFirst: boolean, depth: Dis
   if (isFirst) {
     return `You are ${model.displayName}, a member of an AI council helping a user make an informed decision. You are the FIRST model to respond. You may ask up to 2 brief clarifying questions if the user's question is ambiguous or missing important details. If the question is clear enough, proceed directly with your analysis and recommendation. ${depthInstruction}`;
   }
+
+  if (style === 'independent') {
+    return `You are ${model.displayName}, a member of an AI council helping a user make an informed decision. You are responding independently — other council members are also analyzing this question separately. Provide your honest, unbiased analysis and recommendation. Do NOT ask any questions to the user. ${depthInstruction}`;
+  }
+
   return `You are ${model.displayName}, a member of an AI council helping a user make an informed decision. You will see the user's question and previous council members' responses. Provide your own unique perspective and analysis. Do NOT ask any questions to the user. ${depthInstruction} If you agree with previous members, explain why. If you disagree, explain your reasoning.`;
 }
 

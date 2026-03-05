@@ -16,6 +16,8 @@ export type SystemPromptMode = 'upfront' | 'dynamic';
 
 export type DiscussionDepth = 'thorough' | 'concise';
 
+export type DiscussionStyle = 'sequential' | 'independent';
+
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export type CursorStyle = 'ripple' | 'breathing' | 'orbit' | 'multi';
@@ -25,6 +27,7 @@ export interface AppSettings {
   masterModel: MasterModelConfig;
   systemPromptMode: SystemPromptMode;
   discussionDepth: DiscussionDepth;
+  discussionStyle: DiscussionStyle;
   theme: ThemeMode;
   cursorStyle: CursorStyle;
   sessionSavePath: string | null;

@@ -1,5 +1,5 @@
 import { useSettingsStore } from '../../stores/settingsStore';
-import type { SystemPromptMode, DiscussionDepth } from '../../types';
+import type { SystemPromptMode, DiscussionDepth, DiscussionStyle } from '../../types';
 
 export default function AdvancedSettings() {
   const { settings, updateSettings } = useSettingsStore();
@@ -16,6 +16,21 @@ export default function AdvancedSettings() {
       label: 'Generate Dynamically Per Turn',
       description:
         'Master model generates each system prompt right before that model responds, incorporating context from previous responses. More adaptive but uses more API calls.',
+    },
+  ];
+
+  const styles: { id: DiscussionStyle; label: string; description: string }[] = [
+    {
+      id: 'sequential',
+      label: 'Sequential',
+      description:
+        'Each model sees previous responses and can build on, challenge, or refine them. Best for deep, iterative analysis.',
+    },
+    {
+      id: 'independent',
+      label: 'Independent',
+      description:
+        'Each model receives only the original question. Prevents groupthink and gives completely unbiased perspectives. The master model still sees all responses.',
     },
   ];
 
@@ -36,6 +51,40 @@ export default function AdvancedSettings() {
 
   return (
     <div>
+      <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
+        Discussion Style
+      </h3>
+      <p className="text-xs text-[var(--color-text-tertiary)] mb-3">
+        How council models interact with each other during discussion
+      </p>
+
+      <div className="space-y-2 mb-6">
+        {styles.map((style) => (
+          <button
+            key={style.id}
+            onClick={() => updateSettings({ discussionStyle: style.id })}
+            className={`w-full text-left p-3 rounded-[var(--radius-md)] border transition-all ${
+              settings.discussionStyle === style.id
+                ? 'border-[var(--color-accent)] bg-[var(--color-accent-light)]'
+                : 'border-[var(--color-border-primary)] hover:border-[var(--color-border-secondary)] bg-[var(--color-bg-secondary)]'
+            }`}
+          >
+            <span
+              className={`text-sm font-medium ${
+                settings.discussionStyle === style.id
+                  ? 'text-[var(--color-accent)]'
+                  : 'text-[var(--color-text-primary)]'
+              }`}
+            >
+              {style.label}
+            </span>
+            <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
+              {style.description}
+            </p>
+          </button>
+        ))}
+      </div>
+
       <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
         Discussion Depth
       </h3>

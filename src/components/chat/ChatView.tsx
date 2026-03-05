@@ -219,6 +219,7 @@ export default function ChatView() {
       settings.masterModel,
       settings.systemPromptMode,
       settings.discussionDepth,
+      settings.discussionStyle,
       getApiKey,
       handleEntryComplete,
     );

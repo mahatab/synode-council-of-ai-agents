@@ -94,6 +94,14 @@ pub enum DiscussionDepth {
     Concise,
 }
 
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DiscussionStyle {
+    #[default]
+    Sequential,
+    Independent,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
@@ -102,6 +110,8 @@ pub struct AppSettings {
     pub system_prompt_mode: SystemPromptMode,
     #[serde(default)]
     pub discussion_depth: DiscussionDepth,
+    #[serde(default)]
+    pub discussion_style: DiscussionStyle,
     pub theme: ThemeMode,
     #[serde(default)]
     pub cursor_style: CursorStyle,
@@ -119,6 +129,7 @@ impl Default for AppSettings {
             },
             system_prompt_mode: SystemPromptMode::default(),
             discussion_depth: DiscussionDepth::default(),
+            discussion_style: DiscussionStyle::default(),
             theme: ThemeMode::default(),
             cursor_style: CursorStyle::default(),
             session_save_path: None,
