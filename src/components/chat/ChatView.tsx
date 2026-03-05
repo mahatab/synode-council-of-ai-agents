@@ -9,6 +9,7 @@ import ClarifyingQuestion from './ClarifyingQuestion';
 import FollowUpQuestion from './FollowUpQuestion';
 import MentionDropdown from './MentionDropdown';
 import type { MentionModel } from './MentionDropdown';
+import DiscussionSettingsBar from './DiscussionSettingsBar';
 import ThinkingIndicator from './ThinkingIndicator';
 import Button from '../common/Button';
 import { useCouncilStore } from '../../stores/councilStore';
@@ -465,6 +466,9 @@ export default function ChatView() {
           </div>
         )}
       </div>
+
+      {/* Discussion settings info bar */}
+      <DiscussionSettingsBar />
 
       {/* Input area */}
       <div className="border-t border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] px-6 py-4">
