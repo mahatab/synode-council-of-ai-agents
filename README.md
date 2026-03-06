@@ -57,15 +57,13 @@ You ask a question, and your council of AI models responds one by one. In **Sequ
 ### Token Usage Tracking
 - Per-model input/output token counts
 - Aggregated usage stats in Settings
-- System prompt generation tokens tracked separately
 
 ### Polished UX
 - **Real-time streaming** with 4 animated cursor styles (ripple, breathing, orbit, multi-caret)
-- **Dark, light, and system themes** with smooth transitions
+- **Dark mode** support
 - **Drag-and-drop** model reordering
 - **Secure API key storage** — macOS Keychain or Windows Credential Manager
 - **Setup wizard** with built-in API key instructions for each provider
-- Native window with overlay title bar
 
 ## Screenshots
 
@@ -121,8 +119,7 @@ npm install
 cargo tauri dev
 ```
 
-A setup wizard will guide you through configuring your council models and API keys on first launch.
-
+A setup wizard will guide you through configuring your council models, master model, and API keys on first launch.
 ## Building
 
 ```bash
@@ -132,8 +129,6 @@ cargo tauri build
 **macOS** — produces `src-tauri/target/release/bundle/macos/Synode.app` and `.dmg`
 
 **Windows** — produces `src-tauri/target/release/bundle/nsis/Synode_x.x.x_x64-setup.exe` and `.msi`
-
-An Xcode project (`CouncilOfAIAgents.xcodeproj`) is also included with dev and build schemes for macOS.
 
 ## Architecture
 
