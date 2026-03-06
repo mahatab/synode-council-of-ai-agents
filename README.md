@@ -42,13 +42,13 @@ You ask a question, and your council of AI models responds one by one. In **Sequ
 - **Auto-save** — sessions are saved after every response with AI-generated titles
 - **Provider color coding** — each model is visually identified by its provider
 
-### Follow-Up @Mentions
+### Follow-Up @Mentions (Council Mode)
 - After the verdict, type **`@`** to mention any council member or the master model
 - Ask follow-up questions with **full discussion context** — the model sees every response, not just its own
 - Cross-reference freely: *"@Grok what do you think about GPT's suggestion?"*
 - Chain unlimited follow-ups within the same session
 
-### Smart Prompt Engineering
+### Smart Prompt Engineering (Council Mode)
 - **Upfront mode** — master generates tailored system prompts for all council members before the discussion starts
 - **Dynamic mode** — master generates a custom prompt for each model right before its turn, incorporating context from previous responses
 
