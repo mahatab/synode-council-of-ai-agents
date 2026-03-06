@@ -35,7 +35,6 @@ You ask a question, and your council of AI models responds one by one. In **Sequ
 - **8 providers, 29 models** — Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, and Cohere
 - **Discussion styles** — Sequential (each model builds on previous responses) or Independent (each model responds without seeing others, preventing groupthink)
 - **Master verdict** — a designated model synthesizes all opinions into a final recommendation
-- **Clarifying questions** — the first council member can ask up to 2 clarifying questions before proceeding
 
 ### Direct Chat
 - **Agent picker** — searchable grid of all available models, sorted by API key availability
@@ -78,7 +77,7 @@ You ask a question, and your council of AI models responds one by one. In **Sequ
 ## Screenshots
 
 <p align="center">
-  <img src="docs/images/screenshots/hero-2.png" alt="Synode app showing a council discussion with multiple AI models and a master verdict" width="700" />
+  <img src="docs/images/screenshots/hero-3.png" alt="Synode app showing a council discussion with multiple AI models and a master verdict" width="700" />
 </p>
 <p align="center"><em>Many models, one verdict — watch your council think through the problem, then @mention anyone to keep talking</em></p>
 
