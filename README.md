@@ -84,6 +84,10 @@ You ask a question, and your council of AI models responds one by one. In **Sequ
 </p>
 <p align="center"><em>Control your council with prompt engineering modes</em></p>
 
+### Demo
+
+▶️ [Watch the demo video](https://youtu.be/BvqSjLuyTaA?si=UF8waoQEv-GQ2JNj)
+
 ## Supported Providers
 
 | Provider | Models |
