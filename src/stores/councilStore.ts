@@ -205,7 +205,7 @@ ${JSON.stringify(
           );
 
           const systemPromptKey = `${model.provider}:${model.model}`;
-          let systemPrompt =
+          const systemPrompt =
             get().systemPrompts.get(systemPromptKey) || getDefaultSystemPrompt(model, true, discussionDepth, discussionStyle);
 
           // Dynamic mode: first model doesn't need dynamic prompt (no prior context)
