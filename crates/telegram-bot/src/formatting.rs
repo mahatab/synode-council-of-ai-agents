@@ -409,7 +409,7 @@ pub async fn edit_html(
     if result.is_err() {
         // Fallback to plain text — if this also fails, log the error
         let fallback: Result<teloxide::types::Message, _> = bot
-            .edit_message_text(chat_id, message_id, &strip_html(&chunks[0]))
+            .edit_message_text(chat_id, message_id, strip_html(&chunks[0]))
             .await;
         if let Err(e) = fallback {
             log::error!("Failed to edit message (both HTML and plain text): {}", e);

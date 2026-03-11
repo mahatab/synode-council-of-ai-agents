@@ -5,6 +5,7 @@ use serde_json::{json, Value};
 use crate::models::config::ChatMessage;
 use super::{parse_sse_stream, StreamEvent, TokenStream, UsageData};
 
+#[derive(Default)]
 pub struct DeepSeekProvider {
     client: Client,
 }

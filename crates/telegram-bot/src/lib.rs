@@ -1,3 +1,12 @@
+#![allow(
+    clippy::too_many_arguments,
+    clippy::manual_strip,
+    clippy::if_same_then_else,
+    clippy::needless_range_loop,
+    clippy::manual_find,
+    clippy::collapsible_if
+)]
+
 pub mod council;
 pub mod direct_chat;
 pub mod formatting;

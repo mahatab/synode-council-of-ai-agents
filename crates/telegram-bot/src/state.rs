@@ -44,6 +44,12 @@ pub struct AppState {
     pub chats: Arc<RwLock<HashMap<i64, ChatMode>>>,
 }
 
+impl Default for AppState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AppState {
     pub fn new() -> Self {
         let settings = council_core::settings::load_settings().unwrap_or_default();
