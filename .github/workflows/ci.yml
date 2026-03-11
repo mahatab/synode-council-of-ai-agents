@@ -30,9 +30,9 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            src-tauri/target
-          key: ${{ runner.os }}-cargo-v2-${{ hashFiles('src-tauri/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-v2-
+            target
+          key: ${{ runner.os }}-cargo-v3-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-v3-
 
       - name: Install frontend dependencies
         run: npm install
@@ -44,10 +44,10 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Check (Rust)
-        run: cargo check --manifest-path src-tauri/Cargo.toml
+        run: cargo check --workspace
 
       - name: Clippy (Rust)
-        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+        run: cargo clippy --workspace -- -D warnings
 
   check-windows:
     runs-on: windows-latest
@@ -72,9 +72,9 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            src-tauri/target
-          key: ${{ runner.os }}-cargo-v2-${{ hashFiles('src-tauri/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-v2-
+            target
+          key: ${{ runner.os }}-cargo-v3-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-v3-
 
       - name: Install frontend dependencies
         run: npm install
@@ -86,7 +86,7 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Check (Rust)
-        run: cargo check --manifest-path src-tauri/Cargo.toml
+        run: cargo check --workspace
 
       - name: Clippy (Rust)
-        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+        run: cargo clippy --workspace -- -D warnings

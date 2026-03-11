@@ -1,0 +1,22 @@
+[package]
+name = "council-telegram-bot"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "council_telegram_bot"
+path = "src/lib.rs"
+
+[[bin]]
+name = "council-telegram-bot"
+path = "src/main.rs"
+
+[dependencies]
+council-core = { path = "../council-core" }
+teloxide = { version = "0.13", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+env_logger = "0.11"

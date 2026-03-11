@@ -3,7 +3,7 @@ use security_framework::passwords::{
 };
 use std::collections::HashMap;
 
-use super::keychain::{KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT, LEGACY_ACCOUNT, LEGACY_SERVICES};
+use super::{KEYCHAIN_ACCOUNT, KEYCHAIN_SERVICE, LEGACY_ACCOUNT, LEGACY_SERVICES};
 
 /// Read the single JSON blob from macOS Keychain and parse into a HashMap.
 pub fn read_keychain_blob() -> HashMap<String, String> {

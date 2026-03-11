@@ -566,16 +566,20 @@ ${JSON.stringify(
             }
           });
 
-          const result = await tauri.streamChat(
-            model.provider,
-            model.model,
-            messages,
-            systemPrompt,
-            apiKey,
-            streamId,
-          );
+          let result;
+          try {
+            result = await tauri.streamChat(
+              model.provider,
+              model.model,
+              messages,
+              systemPrompt,
+              apiKey,
+              streamId,
+            );
+          } finally {
+            unlisten();
+          }
 
-          unlisten();
           set({ currentStreamId: null, currentStreamContent: '' });
 
           // Check if first model asked a clarifying question
@@ -671,6 +675,9 @@ ${JSON.stringify(
             onEntryComplete(entry);
           }
         } catch (err) {
+          // Clean up stream state and hide thinking indicator before moving to next model
+          set({ currentStreamId: null, currentStreamContent: '', currentModelIndex: -1 });
+
           // Add error entry and continue to next model
           const entry: DiscussionEntry = {
             role: 'model',

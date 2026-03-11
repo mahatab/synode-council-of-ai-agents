@@ -95,3 +95,16 @@ export async function loadSettings(): Promise<AppSettings> {
 export async function saveSettings(settings: AppSettings): Promise<void> {
   return invoke('save_settings', { settings });
 }
+
+// Telegram bot commands
+export async function startTelegramBot(token: string): Promise<void> {
+  return invoke('start_telegram_bot', { token });
+}
+
+export async function stopTelegramBot(): Promise<void> {
+  return invoke('stop_telegram_bot');
+}
+
+export async function getTelegramStatus(): Promise<{ running: boolean }> {
+  return invoke('get_telegram_status');
+}

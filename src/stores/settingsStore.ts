@@ -25,6 +25,7 @@ const defaultSettings: AppSettings = {
   cursorStyle: 'orbit',
   sessionSavePath: null,
   setupCompleted: false,
+  telegramEnabled: false,
 };
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({

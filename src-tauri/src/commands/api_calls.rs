@@ -1,8 +1,8 @@
 use futures::StreamExt;
 use tauri::{command, AppHandle, Emitter};
 
-use crate::models::config::{ChatMessage, Provider, StreamChatResult, StreamToken, UsageData};
-use crate::providers::{
+use council_core::models::config::{ChatMessage, Provider, StreamChatResult, StreamToken, UsageData};
+use council_core::providers::{
     anthropic::AnthropicProvider, cohere::CohereProvider, deepseek::DeepSeekProvider,
     google::GoogleProvider, mistral::MistralProvider, openai::OpenAIProvider,
     together::TogetherProvider, xai::XAIProvider, StreamEvent,
@@ -81,10 +81,8 @@ pub async fn stream_chat(
                     }
                     Ok(StreamEvent::Usage(usage)) => {
                         // Use MAX rather than SUM: Anthropic sends input/output in separate events
-                        // (input=25,output=0 then input=0,output=150 → max gives 25,150 ✓)
                         // Google sends cumulative totals in every chunk
-                        // (input=10,output=5 then input=10,output=50 → max gives 10,50 ✓)
-                        // OpenAI/others send a single event → max works the same as sum
+                        // OpenAI/others send a single event -> max works the same as sum
                         eprintln!("[USAGE] {:?} received: input={}, output={}", provider, usage.input_tokens, usage.output_tokens);
                         accumulated_usage.input_tokens = accumulated_usage.input_tokens.max(usage.input_tokens);
                         accumulated_usage.output_tokens = accumulated_usage.output_tokens.max(usage.output_tokens);
@@ -123,7 +121,6 @@ pub async fn stream_chat(
                 None
             };
 
-            // Return usage via invoke response (reliable, no race condition with events)
             Ok(StreamChatResult {
                 content: full_response,
                 usage: final_usage,

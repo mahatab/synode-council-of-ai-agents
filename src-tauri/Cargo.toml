@@ -16,6 +16,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.5.4", features = [] }
 
 [dependencies]
+council-core = { path = "../crates/council-core" }
 tauri = { version = "2.10.0", features = ["tray-icon"] }
 tauri-plugin-log = "2"
 tauri-plugin-dialog = "2"
@@ -23,18 +24,6 @@ tauri-plugin-fs = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4"
-reqwest = { version = "0.12", features = ["stream", "json", "rustls-tls"], default-features = false }
 tokio = { version = "1", features = ["full"] }
-tokio-stream = "0.1"
 futures = "0.3"
-uuid = { version = "1", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
-dirs = "5"
-anyhow = "1"
-bytes = "1"
-
-[target.'cfg(target_os = "macos")'.dependencies]
-security-framework = "2.11"
-
-[target.'cfg(target_os = "windows")'.dependencies]
-keyring = { version = "3", features = ["windows-native"] }
+council-telegram-bot = { path = "../crates/telegram-bot" }

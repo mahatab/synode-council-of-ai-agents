@@ -1,7 +1,7 @@
 use keyring::Entry;
 use std::collections::HashMap;
 
-use super::keychain::{KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT};
+use super::{KEYCHAIN_ACCOUNT, KEYCHAIN_SERVICE};
 
 /// Read the single JSON blob from Windows Credential Manager and parse into a HashMap.
 pub fn read_keychain_blob() -> HashMap<String, String> {
