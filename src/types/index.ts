@@ -32,6 +32,7 @@ export interface AppSettings {
   cursorStyle: CursorStyle;
   sessionSavePath: string | null;
   setupCompleted: boolean;
+  telegramEnabled: boolean;
 }
 
 export interface ChatMessage {

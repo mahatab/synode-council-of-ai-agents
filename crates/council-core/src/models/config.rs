@@ -117,6 +117,8 @@ pub struct AppSettings {
     pub cursor_style: CursorStyle,
     pub session_save_path: Option<String>,
     pub setup_completed: bool,
+    #[serde(default)]
+    pub telegram_enabled: bool,
 }
 
 impl Default for AppSettings {
@@ -134,6 +136,7 @@ impl Default for AppSettings {
             cursor_style: CursorStyle::default(),
             session_save_path: None,
             setup_completed: false,
+            telegram_enabled: false,
         }
     }
 }

@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { Bot, Key, Palette, Sliders, HardDrive } from 'lucide-react';
+import { Bot, Key, Palette, Sliders, HardDrive, MessageCircle } from 'lucide-react';
 import Modal from '../common/Modal';
 import ModelManager from './ModelManager';
 import ApiKeyManager from './ApiKeyManager';
 import AppearanceSettings from './AppearanceSettings';
 import AdvancedSettings from './AdvancedSettings';
 import SessionSettings from './SessionSettings';
+import TelegramSettings from './TelegramSettings';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type SettingsTab = 'models' | 'keys' | 'appearance' | 'advanced' | 'sessions';
+type SettingsTab = 'models' | 'keys' | 'appearance' | 'advanced' | 'sessions' | 'telegram';
 
 const tabs: { id: SettingsTab; label: string; icon: typeof Bot }[] = [
   { id: 'models', label: 'Models', icon: Bot },
@@ -20,6 +21,7 @@ const tabs: { id: SettingsTab; label: string; icon: typeof Bot }[] = [
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'sessions', label: 'Sessions', icon: HardDrive },
   { id: 'advanced', label: 'Advanced', icon: Sliders },
+  { id: 'telegram', label: 'Telegram', icon: MessageCircle },
 ];
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
@@ -53,6 +55,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           {activeTab === 'appearance' && <AppearanceSettings />}
           {activeTab === 'sessions' && <SessionSettings />}
           {activeTab === 'advanced' && <AdvancedSettings />}
+          {activeTab === 'telegram' && <TelegramSettings />}
         </div>
       </div>
     </Modal>

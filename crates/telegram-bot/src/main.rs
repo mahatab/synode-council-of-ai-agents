@@ -1,35 +1,17 @@
-mod council;
-mod direct_chat;
-mod formatting;
-mod handlers;
-mod state;
-
-use teloxide::prelude::*;
-use handlers::Command;
-use state::AppState;
-
 #[tokio::main]
 async fn main() {
     env_logger::init();
     log::info!("Starting Council of AI Agents Telegram Bot...");
 
-    let bot = Bot::from_env();
-    let app_state = AppState::new();
+    let token = std::env::var("TELOXIDE_TOKEN")
+        .expect("TELOXIDE_TOKEN environment variable not set");
 
-    log::info!("Bot initialized. Listening for commands...");
+    // Create a shutdown channel; for standalone mode, we never send it
+    // (the process exits on Ctrl+C naturally).
+    let (_shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel::<()>();
 
-    let handler = Update::filter_message()
-        .branch(
-            dptree::entry()
-                .filter_command::<Command>()
-                .endpoint(handlers::handle_command),
-        )
-        .branch(dptree::entry().endpoint(handlers::handle_message));
-
-    Dispatcher::builder(bot, handler)
-        .dependencies(dptree::deps![app_state])
-        .enable_ctrlc_handler()
-        .build()
-        .dispatch()
-        .await;
+    if let Err(e) = council_telegram_bot::start_bot(token, shutdown_rx).await {
+        log::error!("Bot error: {}", e);
+        std::process::exit(1);
+    }
 }

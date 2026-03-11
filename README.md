@@ -68,6 +68,13 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 - Per-model input/output token counts
 - Aggregated usage stats in Settings
 
+### Telegram Bot Integration
+- **Built-in Telegram bot** — chat with Synode from any device
+- **Council and Direct Chat** — both modes available via `/council` and `/chat` commands
+- **Shared config** — uses the same API keys, models, and settings as the desktop app
+- **Auto-start** — bot launches with the app when enabled in Settings
+- See [Telegram Bot docs](docs/TELEGRAM_BOT.md) for setup instructions
+
 ### Polished UX
 - **Real-time streaming** with 4 animated cursor styles (ripple, breathing, orbit, multi-caret)
 - **Dark mode** support

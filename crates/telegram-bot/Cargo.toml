@@ -3,6 +3,10 @@ name = "council-telegram-bot"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "council_telegram_bot"
+path = "src/lib.rs"
+
 [[bin]]
 name = "council-telegram-bot"
 path = "src/main.rs"

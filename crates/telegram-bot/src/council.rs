@@ -63,7 +63,7 @@ pub async fn run_council(
     let mut system_prompts: HashMap<String, String> = HashMap::new();
     if matches!(settings.system_prompt_mode, SystemPromptMode::Upfront) {
         if let Some(master_key) = app_state.get_api_key_for_provider(&master.provider) {
-            formatting::send_html(bot, chat_id, "⚙️ <i>Generating system prompts...</i>").await?;
+            formatting::send_html(bot, chat_id, "✨ <i>Generating system prompts...</i>").await?;
 
             let prompt = build_upfront_prompt_request(question, models, &settings);
             match formatting::with_typing(bot, chat_id, call_model(
@@ -87,7 +87,7 @@ pub async fn run_council(
                     formatting::send_html(
                         bot,
                         chat_id,
-                        &format!("⚠️ Failed to generate system prompts: {}. Using defaults.", e),
+                        &format!("⚠️ Failed to generate system prompts: {}. Using defaults.", formatting::escape_html(&e.to_string())),
                     )
                     .await?;
                 }
@@ -168,7 +168,11 @@ pub async fn run_council(
                         bot,
                         chat_id,
                         thinking_msg.id,
-                        &format!("<b>💬 {}</b>\n\n❌ <i>Error: {}</i>", model.display_name, e),
+                        &format!(
+                            "<b>💬 {}</b>\n\n❌ <i>Error: {}</i>",
+                            formatting::escape_html(&model.display_name),
+                            formatting::escape_html(&e.to_string()),
+                        ),
                     )
                     .await?;
 
@@ -288,7 +292,7 @@ pub async fn resume_after_clarification(
                     bot,
                     chat_id,
                     thinking_msg.id,
-                    &format!("❌ <i>Error: {}</i>", e),
+                    &format!("❌ <i>Error: {}</i>", formatting::escape_html(&e.to_string())),
                 )
                 .await?;
             }
@@ -339,7 +343,11 @@ pub async fn resume_after_clarification(
                         bot,
                         chat_id,
                         thinking_msg.id,
-                        &format!("<b>💬 {}</b>\n\n❌ <i>Error: {}</i>", m.display_name, e),
+                        &format!(
+                            "<b>💬 {}</b>\n\n❌ <i>Error: {}</i>",
+                            formatting::escape_html(&m.display_name),
+                            formatting::escape_html(&e.to_string()),
+                        ),
                     )
                     .await?;
                 }
@@ -369,7 +377,7 @@ async fn generate_master_verdict(
     let verdict_msg = formatting::send_html(
         bot,
         chat_id,
-        "⏳ <b>Generating master verdict...</b>",
+        "🧠 <b>Generating master verdict...</b>",
     )
     .await?;
 

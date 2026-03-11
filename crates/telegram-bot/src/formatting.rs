@@ -233,7 +233,7 @@ fn convert_inline(text: &str) -> String {
 }
 
 /// Escape HTML special characters.
-fn escape_html(text: &str) -> String {
+pub fn escape_html(text: &str) -> String {
     text.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -360,7 +360,7 @@ pub fn format_master_verdict(content: &str) -> String {
 
 /// Format a "thinking" status message.
 pub fn format_thinking(display_name: &str) -> String {
-    format!("⏳ <b>{}</b> is thinking...", escape_html(display_name))
+    format!("🧠 <b>{}</b> is thinking...", escape_html(display_name))
 }
 
 /// Send a formatted HTML message, splitting if needed.
@@ -407,10 +407,13 @@ pub async fn edit_html(
         .await;
 
     if result.is_err() {
-        // Fallback to plain text
-        let _: Result<teloxide::types::Message, _> = bot
+        // Fallback to plain text — if this also fails, log the error
+        let fallback: Result<teloxide::types::Message, _> = bot
             .edit_message_text(chat_id, message_id, &strip_html(&chunks[0]))
             .await;
+        if let Err(e) = fallback {
+            log::error!("Failed to edit message (both HTML and plain text): {}", e);
+        }
     }
 
     // Send remaining chunks as new messages
