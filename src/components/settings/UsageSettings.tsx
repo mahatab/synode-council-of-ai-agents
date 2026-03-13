@@ -195,6 +195,30 @@ export default function UsageSettings() {
         </p>
       </div>
 
+      {/* Summary stat cards */}
+      {usageStats.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="p-3 rounded-[var(--radius-md)] border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)]">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Total Tokens</p>
+            <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+              {formatTokenCount(totalInput + totalOutput)}
+            </p>
+          </div>
+          <div className="p-3 rounded-[var(--radius-md)] border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)]">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Est. Cost</p>
+            <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+              {hasAnyCost ? formatUsdCost(totalCost) : '—'}
+            </p>
+          </div>
+          <div className="p-3 rounded-[var(--radius-md)] border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)]">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Active Models</p>
+            <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+              {usageStats.length}
+            </p>
+          </div>
+        </div>
+      )}
+
       {usageStats.length === 0 && !loading ? (
         <div className="p-4 rounded-[var(--radius-md)] border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)] text-center">
           <p className="text-xs text-[var(--color-text-tertiary)]">
