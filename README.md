@@ -79,12 +79,14 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 - **Auto-start** — bot launches with the app when enabled in Settings
 - See [Telegram Bot docs](docs/TELEGRAM_BOT.md) for setup instructions
 
-### Internet Access (Web Search)
+### Internet Access (Web Search) ![Coming in v0.4.3](https://img.shields.io/badge/coming_in-v0.4.3-yellow)
 - **Live web search** — models can search the web for up-to-date information when answering
 - **4 supported providers** — Anthropic (`web_search` tool), Google (`google_search` grounding), OpenAI (Responses API), xAI (Responses API, Grok-4 only)
 - **Automatic model filtering** — unsupported providers (DeepSeek, Mistral, Together AI, Cohere) are excluded from council when internet is enabled, with amber warnings showing which models are skipped
 - **Globe toggle** — enable/disable from the chat input area or Advanced Settings
 - **Smart prompting** — system prompt nudge instructs models to actively use their search tools
+
+> **Note:** These features are already merged into `main` and available if you [build from source](#run). They will be included in the next release (v0.4.3).
 
 ### Polished UX
 - **Real-time streaming** with 4 animated cursor styles (ripple, breathing, orbit, multi-caret)
