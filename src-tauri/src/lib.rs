@@ -1,7 +1,8 @@
 mod commands;
 
-use commands::{api_calls, keychain, sessions, settings, telegram};
+use commands::{api_calls, keychain, sessions, settings, telegram, window};
 use tauri::Manager;
+use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -19,6 +20,50 @@ pub fn run() {
                         .build(),
                 )?;
             }
+
+            // Build custom app menu with About item
+            let about_item = MenuItemBuilder::with_id("about", "About Synode")
+                .build(app)?;
+            let app_submenu = SubmenuBuilder::new(app, "Synode")
+                .item(&about_item)
+                .separator()
+                .hide()
+                .hide_others()
+                .show_all()
+                .separator()
+                .quit()
+                .build()?;
+            let edit_submenu = SubmenuBuilder::new(app, "Edit")
+                .undo()
+                .redo()
+                .separator()
+                .cut()
+                .copy()
+                .paste()
+                .select_all()
+                .build()?;
+            let window_submenu = SubmenuBuilder::new(app, "Window")
+                .minimize()
+                .maximize()
+                .close_window()
+                .build()?;
+            let menu = MenuBuilder::new(app)
+                .item(&app_submenu)
+                .item(&edit_submenu)
+                .item(&window_submenu)
+                .build()?;
+            app.set_menu(menu)?;
+
+            // Handle "About Synode" menu click
+            let handle = app.handle().clone();
+            app.on_menu_event(move |_app, event| {
+                if event.id().0 == "about" {
+                    let h = handle.clone();
+                    tauri::async_runtime::spawn(async move {
+                        let _ = window::open_about_window(h).await;
+                    });
+                }
+            });
 
             // Auto-start Telegram bot if enabled in settings
             let app_settings = council_core::settings::load_settings().unwrap_or_default();
@@ -65,6 +110,7 @@ pub fn run() {
             telegram::start_telegram_bot,
             telegram::stop_telegram_bot,
             telegram::get_telegram_status,
+            window::open_about_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

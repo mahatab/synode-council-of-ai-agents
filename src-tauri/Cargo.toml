@@ -1,6 +1,6 @@
 [package]
 name = "synode"
-version = "0.4.2"
+version = "0.4.3"
 description = "A council of AI models that collaboratively help you make informed decisions"
 authors = ["Synode Contributors"]
 license = "MIT"
