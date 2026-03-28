@@ -197,11 +197,6 @@ export default function LocalModelsSettings() {
                     {step.linkText} <ExternalLink size={10} />
                   </a>
                 )}
-                {step.command && (
-                  <code className="block mt-1 px-2 py-1 text-xs font-mono bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-[var(--radius-sm)] text-[var(--color-text-secondary)]">
-                    {step.command}
-                  </code>
-                )}
               </div>
             </div>
           ))}
