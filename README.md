@@ -29,10 +29,10 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 
 ### Two Modes
 - **Council Mode** — assemble a panel of AI models for collaborative discussion and a synthesized verdict
-- **Direct Chat** — 1-on-1 conversations with any of 29 models across 8 providers, with multi-turn history and streaming
+- **Direct Chat** — 1-on-1 conversations with any of 29+ models across 8 cloud providers and local models, with multi-turn history and streaming
 
 ### Council Discussion
-- **8 providers, 29 models** — Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, and Cohere
+- **8 cloud providers + local models** — Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, Cohere, and LM Studio
 - **Discussion styles** — Sequential (each model builds on previous responses) or Independent (each model responds without seeing others, preventing groupthink)
 - **Parallel execution** — In Independent mode, models 1..N stream their responses simultaneously for faster results, with a real-time Council Progress overlay tracking each model's status
 - **Master verdict** — a designated model synthesizes all opinions into a final recommendation
@@ -85,6 +85,13 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 - **Smart prompting** — system prompt nudge instructs models to actively use their search tools
 - **Telegram bot support** — web search works in Telegram council and direct chat when enabled in desktop settings
 
+### Local Models (LM Studio)
+- **Run models locally** — use any model from LM Studio alongside cloud providers, free, private, and offline
+- **Dedicated settings tab** — setup guide, server status monitoring, base URL configuration, and dynamic model discovery
+- **No API key required** — Synode connects to your local LM Studio server automatically
+- **Full integration** — local models work in Council Mode, Direct Chat, and Telegram bot with a green "Local" badge for clear identification
+- **Mix and match** — combine local and cloud models in the same council discussion
+
 ### Polished UX
 - **Real-time streaming** with 4 animated cursor styles (ripple, breathing, orbit, multi-caret)
 - **Dark mode** support
@@ -115,6 +122,11 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 </p>
 <p align="center"><em>Control your council with prompt engineering modes</em></p>
 
+<p align="center">
+  <img src="docs/images/screenshots/lmstudio.png" alt="Synode Local Models settings showing LM Studio integration with setup guide and server status" width="700" />
+</p>
+<p align="center"><em>Local Models — run AI models on your own machine via LM Studio, with setup guide and live server status</em></p>
+
 ### Demo
 
 ▶️ [Watch the demo video](https://youtu.be/BvqSjLuyTaA?si=UF8waoQEv-GQ2JNj) *(recorded on an earlier version)*
@@ -131,10 +143,11 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 | **Mistral** | Mistral Large, Mistral Medium, Mistral Small, Codestral | — |
 | **Together AI** | Llama 4 Maverick, Llama 4 Scout | — |
 | **Cohere** | Command A, Command R+ | — |
+| **LM Studio** | Any local model | — |
 
 \* OpenAI: all models except GPT-4.1 Nano and o3-mini &nbsp;&nbsp; \** xAI: Grok-4 family only
 
-> Bring your own API keys. Each key is stored locally in the OS credential store (macOS Keychain or Windows Credential Manager) — never sent anywhere except the provider's own API.
+> Cloud provider API keys are stored locally in the OS credential store (macOS Keychain or Windows Credential Manager) — never sent anywhere except the provider's own API. LM Studio models run entirely on your machine with no API key required.
 
 ## Quick Start
 
@@ -173,7 +186,7 @@ Cargo.toml                    Workspace root
 │   ├── commands/             stream_chat, keychain, sessions, settings, telegram, window
 │   └── lib.rs                App setup, menu, About window, bot auto-start
 ├── crates/council-core/      Shared library
-│   ├── providers/            8 AI provider integrations with SSE streaming
+│   ├── providers/            9 AI provider integrations (8 cloud + LM Studio) with SSE streaming
 │   ├── models/               Config, session, discussion entry types
 │   ├── keychain/             macOS Keychain / Windows Credential Manager
 │   ├── sessions.rs           Session storage
@@ -189,7 +202,7 @@ Cargo.toml                    Workspace root
     │   │                     ModelResponse, MasterVerdict, MentionDropdown,
     │   │                     FollowUpQuestion, ClarifyingQuestion,
     │   │                     ParallelStatusOverlay, StreamingText
-    │   ├── settings/         Models, API Keys, Appearance, Sessions, Usage, Telegram
+    │   ├── settings/         Models, Local Models, API Keys, Appearance, Sessions, Usage, Telegram
     │   ├── about/            About Synode window (separate webview)
     │   ├── setup/            First-run wizard
     │   └── common/           Button, Toggle, Modal

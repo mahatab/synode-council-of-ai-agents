@@ -4,11 +4,11 @@
 
 All API calls are made from the Rust backend. API keys are stored in the OS credential store (macOS Keychain or Windows Credential Manager) and never exposed to the frontend JavaScript context. Responses are streamed via Tauri's event system.
 
-All 8 providers share a common `parse_sse_stream()` utility (`crates/council-core/src/providers/mod.rs`) that handles SSE line buffering across TCP chunk boundaries. Each provider supplies a closure to extract `StreamEvent::Token` and `StreamEvent::Usage` events from its JSON format.
+All 9 providers (8 cloud + LM Studio) share a common `parse_sse_stream()` utility (`crates/council-core/src/providers/mod.rs`) that handles SSE line buffering across TCP chunk boundaries. Each provider supplies a closure to extract `StreamEvent::Token` and `StreamEvent::Usage` events from its JSON format.
 
 Usage data is accumulated using a MAX strategy in `stream_chat` — this uniformly handles Anthropic's split usage events, Google's cumulative totals, and single-event providers like OpenAI.
 
-When **internet access** is enabled, each provider's `stream_chat` receives `web_search_enabled: true`. Supported providers (Anthropic, Google, OpenAI, xAI) inject web search tools into their API requests. OpenAI and xAI switch to the Responses API for web search. A system prompt nudge is appended to instruct models to actively use their search tools. Unsupported providers (DeepSeek, Mistral, Together AI, Cohere) ignore the flag.
+When **internet access** is enabled, each provider's `stream_chat` receives `web_search_enabled: true`. Supported providers (Anthropic, Google, OpenAI, xAI) inject web search tools into their API requests. OpenAI and xAI switch to the Responses API for web search. A system prompt nudge is appended to instruct models to actively use their search tools. Unsupported providers (DeepSeek, Mistral, Together AI, Cohere, LM Studio) ignore the flag.
 
 ## Anthropic (Claude)
 
@@ -98,3 +98,16 @@ When **internet access** is enabled, each provider's `stream_chat` receives `web
 - **System prompt**: `system` role message in messages array
 - **Web search**: Not supported
 - **Implementation**: `crates/council-core/src/providers/cohere.rs`
+
+## LM Studio (Local Models)
+
+- **Endpoint**: `POST http://localhost:1234/v1/chat/completions` (configurable base URL)
+- **Auth**: None required (sends dummy `Bearer lm-studio` header)
+- **Streaming**: OpenAI-compatible SSE format
+- **Token extraction**: `choices[0].delta.content`
+- **Usage extraction**: Final chunk `usage.prompt_tokens` / `usage.completion_tokens` (when available)
+- **System prompt**: `system` role message in messages array
+- **Web search**: Not supported
+- **Model discovery**: `GET {base_url}/models` returns available models dynamically
+- **Note**: Requires LM Studio to be running with the local server enabled. Models are loaded and managed within LM Studio. No API key is needed — all inference runs locally on the user's machine. Multiple models can be used concurrently if loaded simultaneously in LM Studio.
+- **Implementation**: `crates/council-core/src/providers/lmstudio.rs`

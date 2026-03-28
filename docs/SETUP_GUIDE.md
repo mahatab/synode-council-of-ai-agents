@@ -131,6 +131,36 @@ You need at least one API key to use the app. The more providers you configure, 
 4. Click "Create Trial Key" or "Create Production Key"
 5. Copy the generated API key
 
+## Setting Up Local Models with LM Studio (Optional)
+
+Run AI models locally on your machine — free, private, and offline. Local models can be used alongside cloud providers in both Council Mode and Direct Chat.
+
+### 1. Install LM Studio
+
+Download and install LM Studio from [lmstudio.ai](https://lmstudio.ai).
+
+### 2. Download a Model
+
+Open LM Studio, go to the **Model Search** tab, and download a model (e.g., Llama, Mistral, DeepSeek, Qwen).
+
+### 3. Load the Model
+
+Select and load the downloaded model in LM Studio so it is ready for inference.
+
+### 4. Start the Local Server
+
+Go to the **Developer** tab in LM Studio and turn on the **Status** toggle to start the server. The default port is 1234.
+
+### 5. Add Models in Synode
+
+1. Open the Synode desktop app
+2. Go to **Settings > Local Models**
+3. The server status indicator should show **Online**
+4. Click **Add Local Model** and select from the discovered models
+5. The model is now available in your council and direct chat
+
+> **Tip:** You can use multiple local models simultaneously if they are all loaded in LM Studio. Local models appear with a green "Local" badge throughout the app.
+
 ## Setting Up Telegram Bot (Optional)
 
 You can interact with Synode from any device via Telegram. The bot runs inside the desktop app and shares the same API keys, models, and settings.

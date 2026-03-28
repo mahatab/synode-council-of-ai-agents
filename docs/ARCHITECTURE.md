@@ -2,7 +2,7 @@
 
 ## Overview
 
-Council of AI Agents (Synode) is a Tauri v2 desktop application with a Rust backend and React frontend. It operates in two modes: **Council Mode**, where multiple AI models discuss a user's question before a master model delivers a final verdict, and **Direct Chat**, for 1-on-1 conversations with any individual model. Both modes share the same streaming infrastructure across 8 AI providers.
+Council of AI Agents (Synode) is a Tauri v2 desktop application with a Rust backend and React frontend. It operates in two modes: **Council Mode**, where multiple AI models discuss a user's question before a master model delivers a final verdict, and **Direct Chat**, for 1-on-1 conversations with any individual model. Both modes share the same streaming infrastructure across 8 cloud AI providers and LM Studio for local model inference.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -30,7 +30,7 @@ Council of AI Agents (Synode) is a Tauri v2 desktop application with a Rust back
 │  ┌──────────────────────┴────────────────────────────────┐  │
 │  │               council-core (shared library)           │  │
 │  │  providers │ models │ keychain │ sessions │ settings   │  │
-│  │  chat (streaming) │ 8 AI providers                    │  │
+│  │  chat (streaming) │ 9 providers (8 cloud + LM Studio) │  │
 │  └──────────────────────┬────────────────────────────────┘  │
 │                         │                                    │
 │  ┌──────────────────────┴────────────────────────────────┐  │
@@ -127,7 +127,7 @@ Cargo.toml (workspace root)
 | Module     | Commands                                                        |
 |------------|-----------------------------------------------------------------|
 | `keychain` | `save_api_key`, `get_api_key`, `delete_api_key`, `has_api_key`  |
-| `api_calls`| `stream_chat`                                                   |
+| `api_calls`| `stream_chat`, `fetch_lmstudio_models`                          |
 | `sessions` | `save_session`, `load_session`, `list_sessions`, `delete_session`, `get_default_sessions_path` |
 | `settings` | `load_settings`, `save_settings`                                |
 | `telegram` | `start_telegram_bot`, `stop_telegram_bot`, `get_telegram_status`|
@@ -158,12 +158,13 @@ Cargo.toml (workspace root)
 - **SetupWizard** — First-run flow: welcome → model selection → API keys → master model → complete
 - **ChatView** — Council discussion interface with sequential and parallel streaming, `@mention` dropdown for follow-ups. Automatically filters out models that don't support web search when internet access is enabled
 - **DirectChatView** — 1-on-1 chat interface with multi-turn conversation history, globe toggle for internet access
-- **AgentPicker** — Searchable model selection grid with provider color coding and API key availability
+- **AgentPicker** — Searchable model selection grid with provider color coding, API key availability, and dynamic LM Studio model discovery
 - **ModelResponse** / **MasterVerdict** — Display model outputs with provider colors, copy buttons
 - **ClarifyingQuestion** — Emerald-themed UI for answering the first model's clarifying questions, with markdown rendering and highlighted list items
 - **ParallelStatusOverlay** — Transparent floating status bar showing real-time completion status for each parallel model (thinking/streaming/done/error) with animated provider-colored indicators
 - **StreamingText** — Renders all markdown content via ReactMarkdown with custom link handling (opens URLs in system browser via `tauri-plugin-opener`)
-- **SettingsModal** — Tabbed settings: Models (drag-drop reorder), API Keys, Appearance, Sessions, Usage, Advanced, Telegram
+- **SettingsModal** — Tabbed settings: Models (drag-drop reorder), Local Models (LM Studio), API Keys, Appearance, Sessions, Usage, Advanced, Telegram
+- **LocalModelsSettings** — Dedicated LM Studio tab with setup guide, server status, base URL config, and dynamic model discovery/management
 - **UsageSettings** — Dedicated Usage tab with summary stat cards (total tokens, estimated cost, models used) and per-model token/cost breakdown powered by static pricing data from `lib/pricing.ts`
 - **Sidebar** — Session history grouped by date (Today, Yesterday, Previous 7 Days, etc.), filtered by active mode
 - **ModeToggle** — Switches between Council and Direct Chat modes
@@ -178,6 +179,7 @@ interface AppSettings {
   discussionStyle: 'sequential' | 'independent'; // Independent enables parallel execution
   discussionDepth: 'thorough' | 'concise';
   internetAccessEnabled: boolean;       // Enable web search for supported providers
+  lmStudioBaseUrl?: string;            // Custom LM Studio server URL (default: http://localhost:1234/v1)
   theme: 'light' | 'dark' | 'system';
   cursorStyle: 'ripple' | 'breathing' | 'orbit' | 'multi';
   sessionSavePath: string | null;       // Custom session storage path

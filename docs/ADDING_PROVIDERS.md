@@ -212,6 +212,16 @@ const LEGACY_SERVICES: &[(&str, &str)] = &[
 
 No changes needed for Windows — the `keyring` crate in `keychain_windows.rs` uses the shared constants automatically.
 
+## Reference: Local Providers (No API Key)
+
+If your provider doesn't require an API key (like LM Studio), see `crates/council-core/src/providers/lmstudio.rs` as a reference. Key differences from cloud providers:
+
+- The constructor takes an optional `base_url` parameter instead of using a hardcoded endpoint
+- The `api_key` parameter in `stream_chat` is ignored (prefixed with `_`)
+- Frontend components return a dummy key (`"lm-studio"`) to bypass keychain lookups
+- The provider is excluded from `ApiKeyManager.tsx` (no API key UI)
+- A dedicated settings component handles connection config and model discovery
+
 ## Step 6: Test
 
 1. Run `cargo check` to verify Rust code compiles (workspace-level)
