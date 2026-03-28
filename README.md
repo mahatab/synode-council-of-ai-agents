@@ -118,14 +118,14 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 <p align="center"><em>Configure your council — choose from 8 providers, 30+ models, with API keys secured in your OS credential store</em></p>
 
 <p align="center">
-  <img src="docs/images/screenshots/advanced-settings-3.png" alt="Synode advanced settings showing prompt engineering modes" width="700" />
-</p>
-<p align="center"><em>Control your council with prompt engineering modes</em></p>
-
-<p align="center">
   <img src="docs/images/screenshots/lmstudio.png" alt="Synode Local Models settings showing LM Studio integration with setup guide and server status" width="700" />
 </p>
 <p align="center"><em>Local Models — run AI models on your own machine via LM Studio, with setup guide and live server status</em></p>
+
+<p align="center">
+  <img src="docs/images/screenshots/advanced-settings-3.png" alt="Synode advanced settings showing prompt engineering modes" width="700" />
+</p>
+<p align="center"><em>Control your council with prompt engineering modes</em></p>
 
 ### Demo
 
