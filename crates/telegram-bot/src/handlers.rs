@@ -6,26 +6,36 @@ use crate::council;
 use crate::direct_chat;
 use crate::state::{AppState, ChatMode};
 
-#[derive(BotCommands, Clone)]
-#[command(rename_rule = "lowercase", description = "Available commands:")]
-pub enum Command {
-    #[command(description = "Welcome message and available commands")]
-    Start,
-    #[command(description = "Start a council discussion — /council <question>")]
-    Council(String),
-    #[command(description = "Direct chat with a model — /chat <model> <message>")]
-    Chat(String),
-    #[command(description = "List available models")]
-    Models,
-    #[command(description = "List recent sessions")]
-    Sessions,
-    #[command(description = "Show current settings")]
-    Settings,
-    #[command(description = "Cancel ongoing discussion or chat")]
-    Stop,
-    #[command(description = "Show help")]
-    Help,
+// The BotCommands derive in teloxide-macros 0.8 expands to code that newer Rust
+// compilers report as unreachable, which fails Clippy under `-D warnings`. The
+// enum lives in its own module so the allow covers only the generated code.
+#[allow(unreachable_code)]
+mod command {
+    use teloxide::utils::command::BotCommands;
+
+    #[derive(BotCommands, Clone)]
+    #[command(rename_rule = "lowercase", description = "Available commands:")]
+    pub enum Command {
+        #[command(description = "Welcome message and available commands")]
+        Start,
+        #[command(description = "Start a council discussion — /council <question>")]
+        Council(String),
+        #[command(description = "Direct chat with a model — /chat <model> <message>")]
+        Chat(String),
+        #[command(description = "List available models")]
+        Models,
+        #[command(description = "List recent sessions")]
+        Sessions,
+        #[command(description = "Show current settings")]
+        Settings,
+        #[command(description = "Cancel ongoing discussion or chat")]
+        Stop,
+        #[command(description = "Show help")]
+        Help,
+    }
 }
+
+pub use command::Command;
 
 /// Handle slash commands.
 pub async fn handle_command(
