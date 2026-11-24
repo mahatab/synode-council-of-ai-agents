@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import MainLayout from './components/layout/MainLayout';
 import SetupWizard from './components/setup/SetupWizard';
 import { useSettingsStore } from './stores/settingsStore';
+import { useModelCatalogStore } from './stores/modelCatalogStore';
 
 export default function App() {
   const { settings, loaded, loadSettings } = useSettingsStore();
@@ -9,6 +10,15 @@ export default function App() {
   useEffect(() => {
     loadSettings();
   }, [loadSettings]);
+
+  // Once keys can exist, ask each provider for its current models. This also runs
+  // right after the setup wizard saves the first keys.
+  const refreshAll = useModelCatalogStore((s) => s.refreshAll);
+  useEffect(() => {
+    if (loaded && settings.setupCompleted) {
+      void refreshAll();
+    }
+  }, [loaded, settings.setupCompleted, refreshAll]);
 
   const showApp = loaded && settings.setupCompleted;
 

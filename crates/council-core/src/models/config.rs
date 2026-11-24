@@ -134,7 +134,7 @@ impl Default for AppSettings {
             council_models: vec![],
             master_model: MasterModelConfig {
                 provider: Provider::Anthropic,
-                model: "claude-opus-4-6".to_string(),
+                model: "claude-opus-5-5".to_string(),
             },
             system_prompt_mode: SystemPromptMode::default(),
             discussion_depth: DiscussionDepth::default(),

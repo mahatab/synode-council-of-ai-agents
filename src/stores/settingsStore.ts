@@ -17,7 +17,7 @@ interface SettingsState {
 
 const defaultSettings: AppSettings = {
   councilModels: [],
-  masterModel: { provider: 'anthropic', model: 'claude-opus-4-6' },
+  masterModel: { provider: 'anthropic', model: 'claude-opus-5-5' },
   systemPromptMode: 'upfront',
   discussionDepth: 'thorough',
   discussionStyle: 'sequential',

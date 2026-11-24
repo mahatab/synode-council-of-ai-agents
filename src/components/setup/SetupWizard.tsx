@@ -19,7 +19,7 @@ export default function SetupWizard() {
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
   const [masterModel, setMasterModel] = useState<MasterModelConfig>({
     provider: 'anthropic',
-    model: 'claude-opus-4-6',
+    model: 'claude-opus-5-5',
   });
   const [openInfo, setOpenInfo] = useState<string | null>(null);
 

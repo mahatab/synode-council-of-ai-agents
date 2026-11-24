@@ -7,6 +7,7 @@ pub mod mistral;
 pub mod together;
 pub mod cohere;
 pub mod lmstudio;
+pub mod model_list;
 
 use anyhow::{anyhow, Result};
 use bytes::Bytes;

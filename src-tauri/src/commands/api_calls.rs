@@ -171,3 +171,14 @@ pub async fn fetch_lmstudio_models(
     let provider = LMStudioProvider::new(base_url.as_deref());
     provider.list_models().await.map_err(|e| e.to_string())
 }
+
+/// List the chat models a cloud provider currently offers to this API key.
+#[command]
+pub async fn fetch_provider_models(
+    provider: Provider,
+    api_key: String,
+) -> Result<Vec<council_core::providers::model_list::RemoteModel>, String> {
+    council_core::providers::model_list::list_models(&provider, &api_key)
+        .await
+        .map_err(|e| e.to_string())
+}
