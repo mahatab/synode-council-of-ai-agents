@@ -16,6 +16,15 @@
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows-000000?logo=apple&logoColor=white" alt="macOS | Windows" />
 </p>
 
+<p align="center">
+  <a href="https://github.com/mahatab/synode-council-of-ai-agents/releases/latest"><img src="https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge" alt="Download for Windows" /></a>
+  <a href="https://github.com/mahatab/synode-council-of-ai-agents/releases/latest"><img src="https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download for macOS" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/images/synode-tour.gif" alt="A tour of Synode: a council discussion ending in a master verdict, Direct Chat with a grid of models, local models through LM Studio, and the Telegram bot settings" width="800" />
+</p>
+
 ---
 
 Synode is a desktop app for **macOS and Windows** that assembles a **council of AI models** to collaboratively tackle your questions. Multiple models from different providers discuss the topic - either sequentially (building on each other) or independently (preventing groupthink) - then a **master model** synthesizes everything into a clear, actionable verdict. You can also switch to **Direct Chat** mode for 1-on-1 conversations with any individual model.
