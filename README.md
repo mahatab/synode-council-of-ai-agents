@@ -222,14 +222,19 @@ Cargo.toml                    Workspace root
 |-------|-----------|
 | Desktop framework | Tauri v2 (Rust + native WebView) |
 | Frontend | React 19, TypeScript 5.9 |
+| Build tool | Vite 7 |
 | Styling | Tailwind CSS v4 |
 | State management | Zustand |
 | Animations | Framer Motion |
+| Icons | Lucide React |
 | Drag-and-drop | dnd-kit |
-| Markdown | react-markdown + react-syntax-highlighter |
+| Markdown | react-markdown + remark-gfm |
+| Cost estimation | tokentally |
 | External links | tauri-plugin-opener (system default browser) |
 | API key storage | macOS Keychain / Windows Credential Manager |
-| HTTP streaming | reqwest + tokio-stream with SSE line buffering |
+| Async runtime | Tokio |
+| HTTP streaming | reqwest + futures with SSE line buffering |
+| Telegram bot | teloxide |
 
 ## Documentation
 
