@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "windows": {
+      "signCommand": "artifact-signing-cli -e https://eus.codesigning.azure.net/ -a myartifactsigning -c m2labs-public %1"
+    }
+  }
+}
