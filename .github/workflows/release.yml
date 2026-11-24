@@ -1,12 +1,29 @@
 name: Release
 
+# On a v* tag, builds the macOS and Windows installers and attaches them to the release.
+# On a pull request that changes this file or the Windows signing settings, only the
+# Windows job runs: it builds, signs and verifies, and publishes nothing.
+#
+# The Windows build is signed with Azure Artifact Signing. Tauri runs the signCommand in
+# src-tauri/tauri.windows-signing.conf.json for the app, the NSIS installer and the MSI.
+# It needs these repository secrets, for the app registration that has the Artifact
+# Signing Certificate Profile Signer role on the myartifactsigning account:
+#   AZURE_CLIENT_ID      application (client) id
+#   AZURE_TENANT_ID      directory (tenant) id
+#   AZURE_CLIENT_SECRET  client secret value
+
 on:
   push:
     tags:
       - 'v*'
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - src-tauri/tauri.windows-signing.conf.json
 
 jobs:
   build-macos:
+    if: github.event_name == 'push'
     runs-on: macos-latest
 
     permissions:
@@ -98,13 +115,74 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Build and release
+      - name: Check signing secrets
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          if [ -z "$AZURE_CLIENT_ID" ] || [ -z "$AZURE_TENANT_ID" ] || [ -z "$AZURE_CLIENT_SECRET" ]; then
+            echo "::error::Signing secrets are missing. Add the three AZURE_* secrets to this repository (see the comment at the top of this file)."
+            exit 1
+          fi
+
+      # The signing tool Tauri recommends for Artifact Signing. It uses signtool and .NET,
+      # which the Windows runner already has.
+      - name: Install the signing tool
+        run: cargo install artifact-signing-cli --version 0.12.0 --locked
+
+      # No tagName here, so this step only builds and signs. The installers are attached
+      # to the release further down, after their signatures have been checked.
+      - name: Build and sign
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: Synode ${{ github.ref_name }}
-          releaseBody: 'See the assets below to download and install Synode.'
-          releaseDraft: false
-          prerelease: false
+          args: --config "${{ github.workspace }}/src-tauri/tauri.windows-signing.conf.json"
+
+      # Tauri signs the copy of the app that goes into the installer, so unpack the NSIS
+      # installer and check every program in it, plus both installers themselves.
+      - name: Verify signatures
+        shell: pwsh
+        run: |
+          $bundle = "target/release/bundle"
+          $setup = Get-ChildItem "$bundle/nsis/*-setup.exe" | Select-Object -First 1
+          $msi = Get-ChildItem "$bundle/msi/*.msi" | Select-Object -First 1
+          if (-not $setup -or -not $msi) { Write-Error "The NSIS installer or the MSI was not built."; exit 1 }
+          $out = Join-Path $env:RUNNER_TEMP "unpacked"
+          7z x $setup.FullName "-o$out" -y | Out-Null
+          $files = @($setup, $msi) + @(Get-ChildItem $out -Recurse -Include *.exe, *.dll)
+          if (-not ($files | Where-Object Name -eq 'synode.exe')) { Write-Error "synode.exe was not found in the installer."; exit 1 }
+          $bad = $false
+          foreach ($f in $files) {
+            $s = Get-AuthenticodeSignature $f.FullName
+            Write-Host "$($f.Name): $($s.Status) | $($s.SignerCertificate.Subject) | timestamp: $($s.TimeStamperCertificate.Subject)"
+            if ($f.Name -in @($setup.Name, $msi.Name, 'synode.exe', 'uninstall.exe') -and ($s.Status -ne 'Valid' -or -not $s.TimeStamperCertificate)) { $bad = $true }
+          }
+          if ($bad) { Write-Error "An installer, the app, or the uninstaller is not signed and timestamped."; exit 1 }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synode-windows-signed
+          path: |
+            target/release/bundle/nsis/*-setup.exe
+            target/release/bundle/msi/*.msi
+          if-no-files-found: error
+
+      # The macOS job may create the release at the same moment, so fall back to the
+      # existing one if creating it fails.
+      - name: Attach to the release
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "Synode $TAG" --notes "See the assets below to download and install Synode." \
+            || gh release view "$TAG" >/dev/null
+          gh release upload "$TAG" target/release/bundle/nsis/*-setup.exe target/release/bundle/msi/*.msi --clobber
