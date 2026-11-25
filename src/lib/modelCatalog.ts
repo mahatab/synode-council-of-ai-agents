@@ -14,15 +14,17 @@ const UPPERCASE_WORDS = new Set(['gpt', 'glm', 'oss', 'ai']);
 /** Turn a bare model id such as "gpt-6.2-astra" into a readable name. */
 export function prettifyModelId(id: string): string {
   const base = id.includes('/') ? id.slice(id.lastIndexOf('/') + 1) : id;
-  const words = base
-    .split(/[-_]/)
-    .filter((word) => word && word !== 'latest')
-    .map((word) =>
-      UPPERCASE_WORDS.has(word.toLowerCase())
-        ? word.toUpperCase()
-        : word.charAt(0).toUpperCase() + word.slice(1),
-    );
-  return words.join(' ') || id;
+  const parts = base.split(/[-_]/).filter(Boolean);
+  // "mistral-large-latest" reads fine as "Mistral Large", but "chat-latest"
+  // would be left as just "Chat", so a one-word name keeps its "Latest".
+  const kept = parts.filter((word) => word !== 'latest');
+  const words = (kept.length > 1 ? kept : parts).map((word) =>
+    UPPERCASE_WORDS.has(word.toLowerCase())
+      ? word.toUpperCase()
+      : word.charAt(0).toUpperCase() + word.slice(1),
+  );
+  // Match the built-in names: "GPT-6.2 Sol", not "GPT 6.2 Sol".
+  return words.join(' ').replace(/^GPT (?=\d)/, 'GPT-') || id;
 }
 
 /**
