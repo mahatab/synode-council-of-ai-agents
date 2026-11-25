@@ -5,6 +5,7 @@ import { PROVIDERS, getProviderColor } from '../../types';
 import type { DirectChatAgent, Provider } from '../../types';
 import { hasApiKey, fetchLMStudioModels } from '../../lib/tauri';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useCatalogProviders } from '../../stores/modelCatalogStore';
 
 interface AgentPickerProps {
   onSelect: (agent: DirectChatAgent) => void;
@@ -24,6 +25,7 @@ export default function AgentPicker({ onSelect }: AgentPickerProps) {
   const [availableProviders, setAvailableProviders] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const internetAccessEnabled = useSettingsStore((s) => s.settings.internetAccessEnabled);
+  const catalogProviders = useCatalogProviders();
 
   const [lmStudioModels, setLMStudioModels] = useState<ModelItem[]>([]);
 
@@ -63,7 +65,7 @@ export default function AgentPicker({ onSelect }: AgentPickerProps) {
   }, []);
 
   const allModels: ModelItem[] = [
-    ...PROVIDERS.filter(p => p.id !== 'lmstudio').flatMap((p) =>
+    ...catalogProviders.filter(p => p.id !== 'lmstudio').flatMap((p) =>
       p.models.map((m) => ({
         provider: p.id,
         providerName: p.name,

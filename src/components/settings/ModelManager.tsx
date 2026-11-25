@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GripVertical, Plus, Trash2, Crown } from 'lucide-react';
+import { GripVertical, Plus, Trash2, Crown, RefreshCw } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -19,10 +19,19 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import Button from '../common/Button';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { PROVIDERS, getProviderColor, modelSupportsWebSearch } from '../../types';
+import { useCatalogProviders, useModelCatalogStore } from '../../stores/modelCatalogStore';
+import { getProviderColor, getProviderInfo, modelSupportsWebSearch } from '../../types';
 import type { ModelConfig, Provider, MasterModelConfig } from '../../types';
 
-const CLOUD_PROVIDERS = PROVIDERS.filter(p => p.id !== 'lmstudio');
+/** "just now", "5 minutes ago", "3 hours ago", or a date for anything older. */
+function describeAge(timestamp: number): string {
+  const minutes = Math.floor((Date.now() - timestamp) / 60000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  return new Date(timestamp).toLocaleDateString();
+}
 
 interface SortableModelProps {
   model: ModelConfig;
@@ -103,6 +112,12 @@ function SortableModel({ model, isFirst, onRemove, internetAccessEnabled }: Sort
 
 export default function ModelManager() {
   const { settings, updateSettings } = useSettingsStore();
+  const catalogProviders = useCatalogProviders();
+  const cloudProviders = catalogProviders.filter((p) => p.id !== 'lmstudio');
+  const { refreshing, fetchedAt, errors, refreshAll } = useModelCatalogStore();
+  const failedProviders = (Object.keys(errors) as Provider[]).map(
+    (id) => getProviderInfo(id).name,
+  );
   const [showAddModel, setShowAddModel] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<Provider>('anthropic');
   const [selectedModel, setSelectedModel] = useState('');
@@ -131,7 +146,7 @@ export default function ModelManager() {
   const handleAddModel = () => {
     if (!selectedModel) return;
 
-    const provider = CLOUD_PROVIDERS.find((p) => p.id === selectedProvider)!;
+    const provider = cloudProviders.find((p) => p.id === selectedProvider)!;
     const model = provider.models.find((m) => m.id === selectedModel)!;
 
     // Check for duplicates
@@ -160,7 +175,7 @@ export default function ModelManager() {
   };
 
   const handleMasterModelChange = (provider: Provider, model: string) => {
-    const providerInfo = CLOUD_PROVIDERS.find((p) => p.id === provider);
+    const providerInfo = cloudProviders.find((p) => p.id === provider);
     if (!providerInfo) return;
     const modelInfo = providerInfo.models.find((m) => m.id === model);
     if (modelInfo) {
@@ -215,7 +230,7 @@ export default function ModelManager() {
               }}
               className="w-full px-3 py-1.5 text-sm bg-[var(--color-bg-input)] border border-[var(--color-border-primary)] rounded-[var(--radius-sm)] text-[var(--color-text-primary)]"
             >
-              {CLOUD_PROVIDERS.map((p) => (
+              {cloudProviders.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -227,7 +242,7 @@ export default function ModelManager() {
               className="w-full px-3 py-1.5 text-sm bg-[var(--color-bg-input)] border border-[var(--color-border-primary)] rounded-[var(--radius-sm)] text-[var(--color-text-primary)]"
             >
               <option value="">Select model...</option>
-              {CLOUD_PROVIDERS.find((p) => p.id === selectedProvider)?.models.map(
+              {cloudProviders.find((p) => p.id === selectedProvider)?.models.map(
                 (m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
@@ -257,6 +272,26 @@ export default function ModelManager() {
             <Plus size={14} /> Add Model
           </Button>
         )}
+
+        <div className="flex items-center gap-2 mt-3 text-xs text-[var(--color-text-tertiary)]">
+          <button
+            onClick={() => void refreshAll()}
+            disabled={refreshing}
+            className="inline-flex items-center gap-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-60"
+          >
+            <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />
+            {refreshing ? 'Checking for new models...' : 'Check for new models'}
+          </button>
+          {!refreshing && fetchedAt && <span>Updated {describeAge(fetchedAt)}</span>}
+          {!refreshing && failedProviders.length > 0 && (
+            <span className="text-amber-500">
+              Could not reach {failedProviders.join(', ')}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
+          Model lists come from each provider you have an API key for.
+        </p>
       </div>
 
       {/* Master Model */}
@@ -276,14 +311,14 @@ export default function ModelManager() {
             value={settings.masterModel.provider}
             onChange={(e) => {
               const provider = e.target.value as Provider;
-              const firstModel = CLOUD_PROVIDERS.find((p) => p.id === provider)?.models[0];
+              const firstModel = cloudProviders.find((p) => p.id === provider)?.models[0];
               if (firstModel) {
                 handleMasterModelChange(provider, firstModel.id);
               }
             }}
             className="px-3 py-1.5 text-sm bg-[var(--color-bg-input)] border border-[var(--color-border-primary)] rounded-[var(--radius-sm)] text-[var(--color-text-primary)]"
           >
-            {CLOUD_PROVIDERS.map((p) => (
+            {cloudProviders.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -296,7 +331,7 @@ export default function ModelManager() {
             }
             className="flex-1 px-3 py-1.5 text-sm bg-[var(--color-bg-input)] border border-[var(--color-border-primary)] rounded-[var(--radius-sm)] text-[var(--color-text-primary)]"
           >
-            {CLOUD_PROVIDERS.find((p) => p.id === settings.masterModel.provider)?.models.map(
+            {cloudProviders.find((p) => p.id === settings.masterModel.provider)?.models.map(
               (m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}

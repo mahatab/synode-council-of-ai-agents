@@ -38,7 +38,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 
 ### Two Modes
 - **Council Mode** — assemble a panel of AI models for collaborative discussion and a synthesized verdict
-- **Direct Chat** — 1-on-1 conversations with any of 29+ models across 8 cloud providers and local models, with multi-turn history and streaming
+- **Direct Chat** — 1-on-1 conversations with any chat model from 8 cloud providers and local models, with multi-turn history and streaming
 
 ### Council Discussion
 - **8 cloud providers + local models** — Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, Cohere, and LM Studio
@@ -67,6 +67,11 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 - **Concise** — 2-3 key points per model, optimized for speed and cost
 - Active settings are always visible in the chat view with (i) tooltips explaining each option
 
+### Always-Current Model Lists
+- **Live model discovery** — Synode asks each provider which chat models it offers, using your own API key, so new models appear the day they are released
+- **Works offline** — a built-in list of featured models is the fallback when a provider cannot be reached
+- **Refresh on demand** — lists update when the app starts, when you add a key, and from **Check for new models** in Settings
+
 ### Session Management
 - Auto-save after every response — never lose a discussion
 - AI-generated session titles
@@ -75,7 +80,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 
 ### Token Usage & Cost Tracking
 - Per-model input/output token counts
-- **Estimated USD cost** per model and grand total, powered by [tokentally](https://github.com/steipete/tokentally) with static pricing for all 29 models
+- **Estimated USD cost** per model and grand total, powered by [tokentally](https://github.com/steipete/tokentally) with built-in pricing for the featured models
 - Dedicated **Usage tab** in Settings — separates read-only analytics from editable model configuration
 - Summary stat cards showing total tokens, total cost, and models used at a glance
 
@@ -88,7 +93,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 
 ### Internet Access (Web Search)
 - **Live web search** — models can search the web for up-to-date information when answering
-- **4 supported providers** — Anthropic (`web_search` tool), Google (`google_search` grounding), OpenAI (Responses API), xAI (Responses API, Grok-4 only)
+- **4 supported providers** — Anthropic (`web_search` tool), Google (`google_search` grounding), OpenAI (Responses API), xAI (Responses API, Grok 4 family)
 - **Automatic model filtering** — unsupported providers (DeepSeek, Mistral, Together AI, Cohere) are excluded from council when internet is enabled, with amber warnings showing which models are skipped
 - **Globe toggle** — enable/disable from the chat input area or Advanced Settings
 - **Smart prompting** — system prompt nudge instructs models to actively use their search tools
@@ -119,12 +124,12 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 <p align="center">
   <img src="docs/images/screenshots/direct-chat.png" alt="Synode Direct Chat mode showing the agent picker with a searchable grid of AI models" width="700" />
 </p>
-<p align="center"><em>Direct Chat — pick any model for a 1-on-1 conversation, with all 29 models at your fingertips</em></p>
+<p align="center"><em>Direct Chat — pick any model for a 1-on-1 conversation, with every available model at your fingertips</em></p>
 
 <p align="center">
   <img src="docs/images/screenshots/settings-2.png" alt="Synode settings panel showing model configuration" width="700" />
 </p>
-<p align="center"><em>Configure your council — choose from 8 providers, 30+ models, with API keys secured in your OS credential store</em></p>
+<p align="center"><em>Configure your council — choose from 8 providers and their current models, with API keys secured in your OS credential store</em></p>
 
 <p align="center">
   <img src="docs/images/screenshots/lmstudio.png" alt="Synode Local Models settings showing LM Studio integration with setup guide and server status" width="700" />
@@ -149,17 +154,18 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 
 | Provider | Models | Web Search |
 |----------|--------|:----------:|
-| **Anthropic** | Claude Opus 4.6, Sonnet 4.6, Sonnet 4.5, Haiku 4.5 | ✅ |
-| **OpenAI** | GPT-5.2, GPT-4.1, GPT-4.1 Mini, GPT-4.1 Nano, GPT-4o, GPT-4o Mini, o3, o3-mini, o4-mini | ✅* |
-| **Google** | Gemini 2.5 Pro, Gemini 2.5 Flash, Gemini 2.5 Flash Lite | ✅ |
-| **xAI** | Grok-4, Grok-3, Grok-3 Mini | ✅** |
-| **DeepSeek** | DeepSeek V3 (Chat), DeepSeek R1 (Reasoner) | — |
-| **Mistral** | Mistral Large, Mistral Medium, Mistral Small, Codestral | — |
-| **Together AI** | Llama 4 Maverick, Llama 4 Scout | — |
-| **Cohere** | Command A, Command R+ | — |
-| **LM Studio** | Any local model | — |
+| **Anthropic** | Claude Fable 5.2, Opus 5.5, Sonnet 5.5, Haiku 5.5 | ✅ |
+| **OpenAI** | GPT-6.2 Astra, GPT-6.2 Sol, GPT-6.1 Terra, GPT-6 Luna, GPT-5.6 Sol, GPT-5.2 | ✅* |
+| **Google** | Gemini 4 Carbon, Gemini 4 Neon, Gemini 4 Hydrogen, Gemini 3.8 Flash, Gemini 3.5 Flash-Lite | ✅ |
+| **xAI** | Grok 4.7, Grok 4.6, Grok 4.3 | ✅ |
+| **DeepSeek** | DeepSeek V4 Pro, DeepSeek V4.1 Flash | — |
+| **Mistral** | Mistral Large, Mistral Small, Codestral | — |
+| **Together AI** | Kimi K3.1 Pro, GLM-5.3, Qwen4 Max, DeepSeek V4.1 Flash, GPT-OSS 120B | — |
+| **Cohere** | Command A+, Command A, Command R+ | — |
 
-\* OpenAI: all models except GPT-4.1 Nano and o3-mini &nbsp;&nbsp; \** xAI: Grok-4 family only
+\* OpenAI: all featured models except GPT-5.6 Sol
+
+These are the models built into the app. Synode also asks each provider you have an API key for which chat models it currently offers, so newly released models show up in the pickers without an app update. Models found this way have no cost estimate until a later release adds their price.
 
 > Cloud provider API keys are stored locally in the OS credential store (macOS Keychain or Windows Credential Manager) — never sent anywhere except the provider's own API. LM Studio models run entirely on your machine with no API key required.
 

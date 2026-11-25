@@ -9,6 +9,7 @@ import type {
   StreamToken,
   StreamChatResult,
 } from '../types';
+import type { RemoteModel } from './modelCatalog';
 
 // Keychain commands
 export async function saveApiKey(service: string, apiKey: string): Promise<void> {
@@ -109,6 +110,14 @@ export async function stopTelegramBot(): Promise<void> {
 
 export async function getTelegramStatus(): Promise<{ running: boolean }> {
   return invoke('get_telegram_status');
+}
+
+// Live model lists
+export async function fetchProviderModels(
+  provider: Provider,
+  apiKey: string,
+): Promise<RemoteModel[]> {
+  return invoke('fetch_provider_models', { provider, apiKey });
 }
 
 // LM Studio commands

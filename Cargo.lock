@@ -4690,7 +4690,7 @@ dependencies = [
 
 [[package]]
 name = "synode"
-version = "0.4.3"
+version = "0.4.4"
 dependencies = [
  "council-core",
  "council-telegram-bot",

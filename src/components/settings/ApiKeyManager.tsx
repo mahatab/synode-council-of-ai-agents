@@ -5,6 +5,7 @@ import ApiKeyInfoPopover from './ApiKeyInfoPopover';
 import { PROVIDERS } from '../../types';
 import type { ProviderInfo } from '../../types';
 import * as tauri from '../../lib/tauri';
+import { useModelCatalogStore } from '../../stores/modelCatalogStore';
 
 export default function ApiKeyManager() {
   const [keyStates, setKeyStates] = useState<
@@ -33,6 +34,7 @@ export default function ApiKeyManager() {
     if (!state?.value.trim()) return;
 
     await tauri.saveApiKey(provider.keychainService, state.value.trim());
+    void useModelCatalogStore.getState().refreshProvider(provider.id);
     setKeyStates((prev) => ({
       ...prev,
       [provider.id]: { ...prev[provider.id], hasKey: true, editing: false, value: '' },
@@ -41,6 +43,7 @@ export default function ApiKeyManager() {
 
   const handleDeleteKey = async (provider: ProviderInfo) => {
     await tauri.deleteApiKey(provider.keychainService);
+    useModelCatalogStore.getState().clearProvider(provider.id);
     setKeyStates((prev) => ({
       ...prev,
       [provider.id]: { hasKey: false, visible: false, value: '', editing: false },

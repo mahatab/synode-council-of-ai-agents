@@ -187,12 +187,50 @@ export interface ProviderInfo {
 
 export const WEB_SEARCH_PROVIDERS: Provider[] = ['anthropic', 'openai', 'google', 'xai'];
 
+/**
+ * Best guess at web search support for a model that is not in the built-in list,
+ * from what each provider's current model families support.
+ */
+export function inferWebSearch(provider: string, modelId: string): boolean {
+  const majorVersion = (prefix: string) => {
+    const match = modelId.startsWith(prefix) ? /^\d+/.exec(modelId.slice(prefix.length)) : null;
+    return match ? Number(match[0]) : 0;
+  };
+  switch (provider) {
+    case 'anthropic':
+    case 'google':
+      return true;
+    case 'openai':
+      return majorVersion('gpt-') >= 5;
+    case 'xai':
+      return majorVersion('grok-') >= 4;
+    default:
+      return false;
+  }
+}
+
+// Web search support for models that came from a provider's live model list, keyed
+// by "provider:model". The model catalog store fills this in.
+const liveWebSearch = new Map<string, boolean>();
+
+export function registerLiveWebSearch(provider: string, models: ModelInfo[]): void {
+  for (const key of [...liveWebSearch.keys()]) {
+    if (key.startsWith(`${provider}:`)) liveWebSearch.delete(key);
+  }
+  for (const model of models) {
+    liveWebSearch.set(`${provider}:${model.id}`, model.webSearch === true);
+  }
+}
+
 /** Check if a specific model supports web search */
 export function modelSupportsWebSearch(provider: string, modelId: string): boolean {
   const providerInfo = PROVIDERS.find((p) => p.id === provider);
   if (!providerInfo) return false;
   const model = providerInfo.models.find((m) => m.id === modelId);
-  return model?.webSearch === true;
+  if (model) return model.webSearch === true;
+  const live = liveWebSearch.get(`${provider}:${modelId}`);
+  if (live !== undefined) return live;
+  return WEB_SEARCH_PROVIDERS.includes(provider as Provider) && inferWebSearch(provider, modelId);
 }
 
 export const PROVIDERS: ProviderInfo[] = [
@@ -201,10 +239,10 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'Anthropic',
     keychainService: 'com.council-of-ai-agents.anthropic',
     models: [
-      { id: 'claude-opus-4-6', name: 'Claude Opus 4.6', webSearch: true },
-      { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6', webSearch: true },
-      { id: 'claude-sonnet-4-5', name: 'Claude Sonnet 4.5', webSearch: true },
-      { id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku 4.5', webSearch: true },
+      { id: 'claude-fable-5-2', name: 'Claude Fable 5.2', webSearch: true },
+      { id: 'claude-opus-5-5', name: 'Claude Opus 5.5', webSearch: true },
+      { id: 'claude-sonnet-5-5', name: 'Claude Sonnet 5.5', webSearch: true },
+      { id: 'claude-haiku-5-5', name: 'Claude Haiku 5.5', webSearch: true },
     ],
     apiKeyUrl: 'https://console.anthropic.com/settings/keys',
     apiKeySteps: [
@@ -220,15 +258,12 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'OpenAI',
     keychainService: 'com.council-of-ai-agents.openai',
     models: [
+      { id: 'gpt-6.2-astra', name: 'GPT-6.2 Astra', webSearch: true },
+      { id: 'gpt-6.2-sol', name: 'GPT-6.2 Sol', webSearch: true },
+      { id: 'gpt-6.1-terra', name: 'GPT-6.1 Terra', webSearch: true },
+      { id: 'gpt-6-luna', name: 'GPT-6 Luna', webSearch: true },
+      { id: 'gpt-5.6-sol', name: 'GPT-5.6 Sol' },
       { id: 'gpt-5.2', name: 'GPT-5.2', webSearch: true },
-      { id: 'gpt-4.1', name: 'GPT-4.1', webSearch: true },
-      { id: 'gpt-4.1-mini', name: 'GPT-4.1 Mini', webSearch: true },
-      { id: 'gpt-4.1-nano', name: 'GPT-4.1 Nano' },
-      { id: 'gpt-4o', name: 'GPT-4o', webSearch: true },
-      { id: 'gpt-4o-mini', name: 'GPT-4o Mini', webSearch: true },
-      { id: 'o3', name: 'o3', webSearch: true },
-      { id: 'o3-mini', name: 'o3-mini' },
-      { id: 'o4-mini', name: 'o4-mini', webSearch: true },
     ],
     apiKeyUrl: 'https://platform.openai.com/api-keys',
     apiKeySteps: [
@@ -244,9 +279,11 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'Google',
     keychainService: 'com.council-of-ai-agents.google',
     models: [
-      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', webSearch: true },
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', webSearch: true },
-      { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', webSearch: true },
+      { id: 'gemini-4-carbon', name: 'Gemini 4 Carbon', webSearch: true },
+      { id: 'gemini-4-neon', name: 'Gemini 4 Neon', webSearch: true },
+      { id: 'gemini-4-hydrogen', name: 'Gemini 4 Hydrogen', webSearch: true },
+      { id: 'gemini-3.8-flash', name: 'Gemini 3.8 Flash', webSearch: true },
+      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash-Lite', webSearch: true },
     ],
     apiKeyUrl: 'https://aistudio.google.com/apikey',
     apiKeySteps: [
@@ -263,9 +300,9 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'xAI',
     keychainService: 'com.council-of-ai-agents.xai',
     models: [
-      { id: 'grok-4-0709', name: 'Grok-4', webSearch: true },
-      { id: 'grok-3', name: 'Grok-3' },
-      { id: 'grok-3-mini', name: 'Grok-3 Mini' },
+      { id: 'grok-4.7', name: 'Grok 4.7', webSearch: true },
+      { id: 'grok-4.6', name: 'Grok 4.6', webSearch: true },
+      { id: 'grok-4.3', name: 'Grok 4.3', webSearch: true },
     ],
     apiKeyUrl: 'https://console.x.ai',
     apiKeySteps: [
@@ -281,8 +318,8 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'DeepSeek',
     keychainService: 'com.council-of-ai-agents.deepseek',
     models: [
-      { id: 'deepseek-chat', name: 'DeepSeek V3 (Chat)' },
-      { id: 'deepseek-reasoner', name: 'DeepSeek R1 (Reasoner)' },
+      { id: 'deepseek-v4-pro', name: 'DeepSeek V4 Pro' },
+      { id: 'deepseek-flash', name: 'DeepSeek V4.1 Flash' },
     ],
     apiKeyUrl: 'https://platform.deepseek.com/api_keys',
     apiKeySteps: [
@@ -299,7 +336,6 @@ export const PROVIDERS: ProviderInfo[] = [
     keychainService: 'com.council-of-ai-agents.mistral',
     models: [
       { id: 'mistral-large-latest', name: 'Mistral Large' },
-      { id: 'mistral-medium-latest', name: 'Mistral Medium' },
       { id: 'mistral-small-latest', name: 'Mistral Small' },
       { id: 'codestral-latest', name: 'Codestral' },
     ],
@@ -317,8 +353,11 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'Together AI',
     keychainService: 'com.council-of-ai-agents.together',
     models: [
-      { id: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8', name: 'Llama 4 Maverick' },
-      { id: 'meta-llama/Llama-4-Scout-17B-16E-Instruct', name: 'Llama 4 Scout' },
+      { id: 'moonshotai/Kimi-K3.1-Pro', name: 'Kimi K3.1 Pro' },
+      { id: 'zai-org/GLM-5.3', name: 'GLM-5.3' },
+      { id: 'Qwen/Qwen4-Max', name: 'Qwen4 Max' },
+      { id: 'deepseek-ai/DeepSeek-V4.1-Flash-1017', name: 'DeepSeek V4.1 Flash' },
+      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B' },
     ],
     apiKeyUrl: 'https://api.together.xyz/settings/api-keys',
     apiKeySteps: [
@@ -333,6 +372,7 @@ export const PROVIDERS: ProviderInfo[] = [
     name: 'Cohere',
     keychainService: 'com.council-of-ai-agents.cohere',
     models: [
+      { id: 'command-a-plus-05-2026', name: 'Command A+' },
       { id: 'command-a-03-2025', name: 'Command A' },
       { id: 'command-r-plus-08-2024', name: 'Command R+' },
     ],

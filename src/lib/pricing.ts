@@ -7,7 +7,9 @@ import {
 
 // Static pricing map: model ID → USD per 1M tokens.
 // Keyed by exact model IDs from PROVIDERS in src/types/index.ts.
-// Prices are best-effort estimates sourced from provider pricing pages (March 2025).
+// Prices are best-effort estimates from the providers' pricing pages (November 2026):
+// standard tier, no caching or batch discount. A model that is not listed here, such
+// as one that only appeared in a provider's live model list, has no cost estimate.
 interface ModelPricingEntry {
   inputUsdPerMillion: number;
   outputUsdPerMillion: number;
@@ -15,49 +17,50 @@ interface ModelPricingEntry {
 
 const PRICING_MAP: Record<string, ModelPricingEntry> = {
   // Anthropic
-  'claude-opus-4-6':           { inputUsdPerMillion: 15.00, outputUsdPerMillion: 75.00 },
-  'claude-sonnet-4-6':         { inputUsdPerMillion: 3.00,  outputUsdPerMillion: 15.00 },
-  'claude-sonnet-4-5':         { inputUsdPerMillion: 3.00,  outputUsdPerMillion: 15.00 },
-  'claude-haiku-4-5-20251001': { inputUsdPerMillion: 0.80,  outputUsdPerMillion: 4.00  },
+  'claude-fable-5-2':  { inputUsdPerMillion: 8, outputUsdPerMillion: 40 },
+  'claude-opus-5-5':   { inputUsdPerMillion: 4, outputUsdPerMillion: 20 },
+  'claude-sonnet-5-5': { inputUsdPerMillion: 2, outputUsdPerMillion: 10 },
+  'claude-haiku-5-5':  { inputUsdPerMillion: 0.1, outputUsdPerMillion: 0.5 },
 
   // OpenAI
-  'gpt-5.2':      { inputUsdPerMillion: 2.00,  outputUsdPerMillion: 8.00  },
-  'gpt-4.1':      { inputUsdPerMillion: 2.00,  outputUsdPerMillion: 8.00  },
-  'gpt-4.1-mini': { inputUsdPerMillion: 0.40,  outputUsdPerMillion: 1.60  },
-  'gpt-4.1-nano': { inputUsdPerMillion: 0.10,  outputUsdPerMillion: 0.40  },
-  'gpt-4o':       { inputUsdPerMillion: 2.50,  outputUsdPerMillion: 10.00 },
-  'gpt-4o-mini':  { inputUsdPerMillion: 0.15,  outputUsdPerMillion: 0.60  },
-  'o3':           { inputUsdPerMillion: 2.00,  outputUsdPerMillion: 8.00  },
-  'o3-mini':      { inputUsdPerMillion: 1.10,  outputUsdPerMillion: 4.40  },
-  'o4-mini':      { inputUsdPerMillion: 1.10,  outputUsdPerMillion: 4.40  },
+  'gpt-6.2-astra': { inputUsdPerMillion: 8, outputUsdPerMillion: 40 },
+  'gpt-6.2-sol':   { inputUsdPerMillion: 2, outputUsdPerMillion: 10 },
+  'gpt-6.1-terra': { inputUsdPerMillion: 1, outputUsdPerMillion: 5 },
+  'gpt-6-luna':    { inputUsdPerMillion: 0.1, outputUsdPerMillion: 0.5 },
+  'gpt-5.6-sol':   { inputUsdPerMillion: 4, outputUsdPerMillion: 20 },
+  'gpt-5.2':       { inputUsdPerMillion: 1.75, outputUsdPerMillion: 14 },
 
   // Google
-  'gemini-2.5-pro':        { inputUsdPerMillion: 1.25,  outputUsdPerMillion: 10.00 },
-  'gemini-2.5-flash':      { inputUsdPerMillion: 0.15,  outputUsdPerMillion: 0.60  },
-  'gemini-2.5-flash-lite': { inputUsdPerMillion: 0.075, outputUsdPerMillion: 0.30  },
+  'gemini-4-carbon':       { inputUsdPerMillion: 2, outputUsdPerMillion: 10 },
+  'gemini-4-neon':         { inputUsdPerMillion: 3, outputUsdPerMillion: 15 },
+  'gemini-4-hydrogen':     { inputUsdPerMillion: 1.5, outputUsdPerMillion: 7.5 },
+  'gemini-3.8-flash':      { inputUsdPerMillion: 0.75, outputUsdPerMillion: 3.75 },
+  'gemini-3.5-flash-lite': { inputUsdPerMillion: 0.3, outputUsdPerMillion: 2.5 },
 
   // xAI
-  'grok-4-0709': { inputUsdPerMillion: 3.00,  outputUsdPerMillion: 15.00 },
-  'grok-3':      { inputUsdPerMillion: 3.00,  outputUsdPerMillion: 15.00 },
-  'grok-3-mini': { inputUsdPerMillion: 0.30,  outputUsdPerMillion: 0.50  },
+  'grok-4.7': { inputUsdPerMillion: 2, outputUsdPerMillion: 6 },
+  'grok-4.6': { inputUsdPerMillion: 2, outputUsdPerMillion: 6 },
+  'grok-4.3': { inputUsdPerMillion: 1.25, outputUsdPerMillion: 2.5 },
 
-  // DeepSeek
-  'deepseek-chat':     { inputUsdPerMillion: 0.27,  outputUsdPerMillion: 1.10  },
-  'deepseek-reasoner': { inputUsdPerMillion: 0.55,  outputUsdPerMillion: 2.19  },
+  // DeepSeek (peak-hours rate)
+  'deepseek-v4-pro': { inputUsdPerMillion: 1.32, outputUsdPerMillion: 3.96 },
+  'deepseek-flash':  { inputUsdPerMillion: 0.3, outputUsdPerMillion: 1.2 },
 
   // Mistral
-  'mistral-large-latest':  { inputUsdPerMillion: 2.00,  outputUsdPerMillion: 6.00  },
-  'mistral-medium-latest': { inputUsdPerMillion: 0.40,  outputUsdPerMillion: 2.00  },
-  'mistral-small-latest':  { inputUsdPerMillion: 0.10,  outputUsdPerMillion: 0.30  },
-  'codestral-latest':      { inputUsdPerMillion: 0.30,  outputUsdPerMillion: 0.90  },
+  'mistral-large-latest': { inputUsdPerMillion: 0.7, outputUsdPerMillion: 2.1 },
+  'mistral-small-latest': { inputUsdPerMillion: 0.15, outputUsdPerMillion: 0.6 },
+  'codestral-latest':     { inputUsdPerMillion: 0.3, outputUsdPerMillion: 0.9 },
 
   // Together AI
-  'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8': { inputUsdPerMillion: 0.27, outputUsdPerMillion: 0.85 },
-  'meta-llama/Llama-4-Scout-17B-16E-Instruct':         { inputUsdPerMillion: 0.18, outputUsdPerMillion: 0.59 },
+  'moonshotai/Kimi-K3.1-Pro':             { inputUsdPerMillion: 2, outputUsdPerMillion: 10 },
+  'zai-org/GLM-5.3':                      { inputUsdPerMillion: 1.4, outputUsdPerMillion: 4.4 },
+  'Qwen/Qwen4-Max':                       { inputUsdPerMillion: 1.425, outputUsdPerMillion: 4.275 },
+  'deepseek-ai/DeepSeek-V4.1-Flash-1017': { inputUsdPerMillion: 0.3, outputUsdPerMillion: 1.2 },
+  'openai/gpt-oss-120b':                  { inputUsdPerMillion: 0.15, outputUsdPerMillion: 0.6 },
 
   // Cohere
-  'command-a-03-2025':      { inputUsdPerMillion: 2.50,  outputUsdPerMillion: 10.00 },
-  'command-r-plus-08-2024': { inputUsdPerMillion: 2.50,  outputUsdPerMillion: 10.00 },
+  'command-a-03-2025':      { inputUsdPerMillion: 2.5, outputUsdPerMillion: 10 },
+  'command-r-plus-08-2024': { inputUsdPerMillion: 2.5, outputUsdPerMillion: 10 },
 };
 
 // Pre-compute Pricing objects for each model
