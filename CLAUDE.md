@@ -47,7 +47,6 @@ The standalone binary (`council-telegram-bot`) is kept as an alternative for pow
 6. **CI/CD** — Add telegram-bot to CI checks, optionally build standalone binary in release workflow
 
 ### Key Technical Details
-- Telegram bot token for testing: 8772699753:AAG8CnWGrqv4fzGOvAQF6AjBaCAFL8jVfyU
 - Teloxide v0.13 with dptree routing
 - HTML parse mode for Telegram messages (more forgiving than MarkdownV2 for AI content)
 - Typing indicator: background tokio task sends typing action every 4s, aborted when model responds
