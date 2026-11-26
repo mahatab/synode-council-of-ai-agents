@@ -127,7 +127,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 <p align="center"><em>Direct Chat — pick any model for a 1-on-1 conversation, with every available model at your fingertips</em></p>
 
 <p align="center">
-  <img src="docs/images/screenshots/settings-2.png" alt="Synode settings panel showing model configuration" width="700" />
+  <img src="docs/images/screenshots/settings-3.png" alt="Synode settings showing the council models, the Check for new models button, and the master model" width="700" />
 </p>
 <p align="center"><em>Configure your council — choose from 8 providers and their current models, with API keys secured in your OS credential store</em></p>
 
