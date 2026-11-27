@@ -123,7 +123,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 ## Screenshots
 
 <p align="center">
-  <img src="docs/images/screenshots/hero-3.png" alt="Synode app showing a council discussion with multiple AI models and a master verdict" width="700" />
+  <img src="docs/images/screenshots/hero-4.png" alt="Synode app showing a council discussion with multiple AI models and a master verdict" width="700" />
 </p>
 <p align="center"><em>Many models, one verdict — watch your council think through the problem, then @mention anyone to keep talking</em></p>
 
@@ -148,7 +148,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 <p align="center"><em>Telegram Integration — chat with your council from any device via a built-in Telegram bot</em></p>
 
 <p align="center">
-  <img src="docs/images/screenshots/advanced-settings-3.png" alt="Synode advanced settings showing prompt engineering modes" width="700" />
+  <img src="docs/images/screenshots/advanced-settings-4.png" alt="Synode advanced settings showing prompt engineering modes" width="700" />
 </p>
 <p align="center"><em>Control your council with prompt engineering modes</em></p>
 
