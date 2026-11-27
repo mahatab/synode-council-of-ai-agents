@@ -25,6 +25,12 @@
   <img src="docs/images/synode-tour.gif" alt="A tour of Synode: a council discussion ending in a master verdict, Direct Chat with a grid of models, local models through LM Studio, and the Telegram bot settings" width="800" />
 </p>
 
+<p align="center">
+  <strong>New in v0.5.0:</strong> always-current model lists. Synode asks each provider which models it offers,<br />
+  so a new model shows up the day it is released, with no app update.
+  <a href="https://github.com/mahatab/synode-council-of-ai-agents/releases/tag/v0.5.0">Release notes</a>
+</p>
+
 ---
 
 Synode is a desktop app for **macOS and Windows** that assembles a **council of AI models** to collaboratively tackle your questions. Multiple models from different providers discuss the topic - either sequentially (building on each other) or independently (preventing groupthink) - then a **master model** synthesizes everything into a clear, actionable verdict. You can also switch to **Direct Chat** mode for 1-on-1 conversations with any individual model.
@@ -39,6 +45,11 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 ### Two Modes
 - **Council Mode** — assemble a panel of AI models for collaborative discussion and a synthesized verdict
 - **Direct Chat** — 1-on-1 conversations with any chat model from 8 cloud providers and local models, with multi-turn history and streaming
+
+### Always-Current Model Lists
+- **Live model discovery** — Synode asks each provider which chat models it offers, using your own API key, so new models appear the day they are released
+- **Works offline** — a built-in list of featured models is the fallback when a provider cannot be reached
+- **Refresh on demand** — lists update when the app starts, when you add a key, and from **Check for new models** in Settings
 
 ### Council Discussion
 - **8 cloud providers + local models** — Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, Cohere, and LM Studio
@@ -66,11 +77,6 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 - **Thorough** — detailed analysis with comprehensive reasoning
 - **Concise** — 2-3 key points per model, optimized for speed and cost
 - Active settings are always visible in the chat view with (i) tooltips explaining each option
-
-### Always-Current Model Lists
-- **Live model discovery** — Synode asks each provider which chat models it offers, using your own API key, so new models appear the day they are released
-- **Works offline** — a built-in list of featured models is the fallback when a provider cannot be reached
-- **Refresh on demand** — lists update when the app starts, when you add a key, and from **Check for new models** in Settings
 
 ### Session Management
 - Auto-save after every response — never lose a discussion
@@ -127,7 +133,7 @@ You ask a question, and your council of AI models responds. In **Sequential** mo
 <p align="center"><em>Direct Chat — pick any model for a 1-on-1 conversation, with every available model at your fingertips</em></p>
 
 <p align="center">
-  <img src="docs/images/screenshots/settings-2.png" alt="Synode settings panel showing model configuration" width="700" />
+  <img src="docs/images/screenshots/settings-3.png" alt="Synode settings showing the council models, the Check for new models button, and the master model" width="700" />
 </p>
 <p align="center"><em>Configure your council — choose from 8 providers and their current models, with API keys secured in your OS credential store</em></p>
 
